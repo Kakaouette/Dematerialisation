@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Configuration;
+using System.Drawing.Imaging;
 
 namespace TestCV
 {
@@ -29,6 +30,7 @@ namespace TestCV
                 cheminImage = ConfigurationManager.AppSettings["cheminImage"];
                 cheminTemp = ConfigurationManager.AppSettings["cheminTemp"];
                 tailleImg = new Size(int.Parse(ConfigurationManager.AppSettings["tailleImg.w"]), int.Parse(ConfigurationManager.AppSettings["tailleImg.h"]));
+                //String lesZones = ConfigurationManager.AppSettings["LesZones"];
             }catch(Exception e)
             {
                 Console.WriteLine("Erreur lors du chargement de la configuration, vérifiez le fichier de configuration."); 
@@ -37,6 +39,16 @@ namespace TestCV
                 System.Environment.Exit(1);
             }
             
+        }
+
+        //Si le dossier Temp existe on le supprime, puis on le créer
+        static private void creerDossierTemp()
+        {
+            if (Directory.Exists(cheminTemp))
+            {
+                suppressionDossierTemp();
+            }
+            Directory.CreateDirectory(cheminTemp);
         }
 
         //init des pattern image avec zone et mot à chercher
@@ -99,24 +111,15 @@ namespace TestCV
         }
 
         //récupération des image en tif dans le dossier spécifié
-        static private void initMat()
+        static private bool initMat()
         {
             Console.WriteLine("Chargement des images\n");
             lesImages = new List<Mat>();
 
             string[] tif = Directory.GetFiles(cheminImage, "*.tif");
-            foreach(string fichierImg in tif)
-            {
-                Console.WriteLine("Chargement de " + fichierImg);
-                Mat img = CvInvoke.Imread(fichierImg, Emgu.CV.CvEnum.LoadImageType.Grayscale);
-                lesImages.Add(img);
-            }
-        }
 
-        //Vérifie que les images chargé sont conformes (redimentionne les images trop grande)
-        static bool verifImg()
-        {
-            if(lesImages.Count != lesImagesZone.Count)
+            //Vérification du nombre d'image comparé au nombre de pattern
+            if (tif.Length != lesImagesZone.Count)
             {
                 Console.WriteLine("Le nombre d'image scanné est inférieur au nombre d'image modèle :");
                 Console.WriteLine("Image scanné : " + lesImages.Count);
@@ -124,34 +127,62 @@ namespace TestCV
                 return false;
             }
 
+            foreach (string fichierImg in tif)
+            {
+                Console.WriteLine("Chargement de " + fichierImg);
+                Mat img = CvInvoke.Imread(fichierImg, Emgu.CV.CvEnum.LoadImageType.Grayscale);
+                lesImages.Add(img);
+                //Vérification de l'image 
+                if (!verifImg(fichierImg, img))
+                    return false;
+            }
+            return true;
+        }
+
+        //Vérifie que les images chargé sont conformes (redimentionne les images trop grande)
+        static bool verifImg(string path, Mat img)
+        {
             int i = 1;
 
-            List<Mat> lesImagesTemp = new List<Mat>(lesImages);
-            foreach (Mat img in lesImages)
+            //Récupération DPI
+            Bitmap btp = new Bitmap(path);
+            if(btp.HorizontalResolution < 240 || btp.VerticalResolution < 240)
             {
-                if (!img.Size.Equals(tailleImg))
-                {
-                    if((img.Size.Height > (tailleImg.Height - 25)) && (img.Size.Width > (tailleImg.Width - 25)))
-                    {
-                        Mat imgR = imgTraitement.redimImage(img, tailleImg.Width, tailleImg.Height);
-                        int index = lesImages.IndexOf(img);
-                        lesImagesTemp.RemoveAt(index);
-                        lesImagesTemp.Insert(index, imgR);
-                        imgR.Save(Program.cheminTemp + i + ".tif");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Une des images est trop petite (mauvaise qualité) :");
-                        Console.WriteLine("Image scanné : " + img.Width + "x" + img.Height);
-                        Console.WriteLine("Image modèle : " + tailleImg.Width + "x" + tailleImg.Height);
-                        return false;
-                    }
-                }
-                i++;
+                Console.WriteLine("Le PPP d'une image est inférieur au minimum spécifié (240) :");
+                Console.WriteLine("Image scanné : " + btp.HorizontalResolution + "x" + btp.VerticalResolution);
+                return false;
             }
-            lesImages = lesImagesTemp;
-
+            //Libération du bitmap
+            btp.Dispose();
+            
+            //Vérification de la taille en pixel
+            if (!img.Size.Equals(tailleImg))
+            {
+                if((img.Size.Height > (tailleImg.Height - 25)) && (img.Size.Width > (tailleImg.Width - 25)))
+                {
+                    Mat imgR = imgTraitement.redimImage(img, tailleImg.Width, tailleImg.Height);
+                    int index = lesImages.IndexOf(img);
+                    lesImages.RemoveAt(index);
+                    lesImages.Insert(index, imgR);
+                }
+                else
+                {
+                    Console.WriteLine("Une des images est trop petite (mauvaise qualité) :");
+                    Console.WriteLine("Image scanné : " + img.Width + "x" + img.Height);
+                    Console.WriteLine("Image modèle : " + tailleImg.Width + "x" + tailleImg.Height);
+                    return false;
+                }
+            }
             return true;
+        }
+
+        static void suppressionDossierTemp()
+        {
+            foreach(String pathF in Directory.GetFiles(cheminTemp))
+            {
+                File.Delete(pathF);
+            }
+            Directory.Delete(cheminTemp);
         }
 
         static void Main(string[] args)
@@ -160,9 +191,9 @@ namespace TestCV
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
             initVariable();
+            creerDossierTemp();
             initImageZone();
-            initMat();
-            if (!verifImg())
+            if (!initMat())
             {
                 Console.WriteLine("L'application va s'arrêter");
                 Console.ReadKey();
@@ -205,8 +236,8 @@ namespace TestCV
             {
                 Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
             }
-
             Console.ReadKey();
+            suppressionDossierTemp();
         }
     }
 }
