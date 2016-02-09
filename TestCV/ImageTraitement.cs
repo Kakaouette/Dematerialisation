@@ -2,6 +2,7 @@
 using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace TestCV
         //Redimentionne
         public Mat redimImage(Mat img, int longueur, int largeur)
         {
-            return img.ToImage<Gray, Byte>().Resize(2048, 2048, Emgu.CV.CvEnum.Inter.Linear, false).Mat;
+            return new  Mat(img.ToImage<Gray, Byte>().Resize(longueur, largeur, Emgu.CV.CvEnum.Inter.Linear, false).Mat, new Rectangle(0, 0, longueur, largeur));
         }
     }
 }

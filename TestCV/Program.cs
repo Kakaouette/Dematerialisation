@@ -64,7 +64,7 @@ namespace TestCV
 
             PatternPage p4 = new PatternPage(4);
             p4.lesZones.Add(new ZoneVerif(new Rectangle(0, 801, 1254, 549), new string[] { "en tant que", "Dernière entreprise ou organisme" }));
-            p4.lesZones.Add(new ZoneVerif(new Rectangle(0, 2184, 1329, 600), new string[] { "s'il s'agit d'un stage", "celui-ci s'est il", "contrat de travail" }));
+            p4.lesZones.Add(new ZoneVerif(new Rectangle(0, 2184, 1329, 600), new string[] { "un stage", "celui-ci s'est il", "contrat de travail" }));
             Console.WriteLine(p4.ToString());
 
             PatternPage p5 = new PatternPage(5);
@@ -113,6 +113,7 @@ namespace TestCV
             }
         }
 
+        //Vérifie que les images chargé sont conformes (redimentionne les images trop grande)
         static bool verifImg()
         {
             if(lesImages.Count != lesImagesZone.Count)
@@ -123,13 +124,20 @@ namespace TestCV
                 return false;
             }
 
-            foreach(Mat img in lesImages)
+            int i = 1;
+
+            List<Mat> lesImagesTemp = new List<Mat>(lesImages);
+            foreach (Mat img in lesImages)
             {
                 if (!img.Size.Equals(tailleImg))
                 {
                     if((img.Size.Height > (tailleImg.Height - 25)) && (img.Size.Width > (tailleImg.Width - 25)))
                     {
-                        imgTraitement.redimImage(img, tailleImg.Width, tailleImg.Height);
+                        Mat imgR = imgTraitement.redimImage(img, tailleImg.Width, tailleImg.Height);
+                        int index = lesImages.IndexOf(img);
+                        lesImagesTemp.RemoveAt(index);
+                        lesImagesTemp.Insert(index, imgR);
+                        imgR.Save(Program.cheminTemp + i + ".tif");
                     }
                     else
                     {
@@ -139,8 +147,9 @@ namespace TestCV
                         return false;
                     }
                 }
+                i++;
             }
-
+            lesImages = lesImagesTemp;
 
             return true;
         }
