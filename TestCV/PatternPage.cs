@@ -50,17 +50,16 @@ namespace TestCV
                 //découpe & sauvegarde
                 Mat imgR = Program.imgTraitement.rognerImage(imgBin, z.zone);
                 imgR.Save(Program.cheminTemp + this.numero + "-" + i + "-crop-page.tif");
-                imgR.Dispose();
                 //tesseract
-                Program.console.tesseractCommande(Program.cheminTemp + this.numero + "-" + i + "-crop-page.tif");
-
+                String texteTesseract = Program.console.tesseractAnalyse(imgR);
                 //Si le texte reconnu par tesseract ne correspond pas à celui de la zone, return false
-                if (!isPresent(System.IO.File.ReadAllText(Program.cheminTemp + "tesseract - temp.txt"), z.motsCherche))
+                if (!isPresent(texteTesseract, z.motsCherche))
                 {
                     Console.WriteLine("\tPattern " + numero + " - Pas de correspondance avec la zone " + i);
                     return false;
                 }
                 i++;
+                imgR.Dispose();
             }
             //Si tous les tests de zone ont renvoyé vrai on renvoi true
             imgBin.Dispose();
