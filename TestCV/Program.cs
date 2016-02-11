@@ -195,8 +195,7 @@ namespace TestCV
 
             initVariable();
             creerDossierTemp();
-            System.Environment.Exit(1);
-            Mat imgt = CvInvoke.Imread("D:\\Desktop\\IMG\\Template\\test.tif", Emgu.CV.CvEnum.LoadImageType.Grayscale);
+            Mat imgt = CvInvoke.Imread("..\\..\\Include\\IMG\\Template\\test.tif", Emgu.CV.CvEnum.LoadImageType.Grayscale);
 
             imgt = imgTraitement.convertBinOtsu(imgt);
             try {
@@ -216,7 +215,7 @@ namespace TestCV
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
             initVariable();
-            creerDossierTemp();
+            //creerDossierTemp();
             initImageZone();
             if (!initMat())
             {
@@ -256,18 +255,23 @@ namespace TestCV
                 Console.WriteLine("======================================================================================");
                 Console.WriteLine("====================================== Résultat ======================================");
                 Console.WriteLine("======================================================================================");
-
+                ImageTemplate template = new ImageTemplate();
+                
                 foreach (PatternPage pattern in lesCorrespondances.Keys)
                 {
                     Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
+                    Mat structImg = template.RLSA(imgTraitement.convertBinOtsu(lesCorrespondances[pattern]));
+                    structImg.Save(cheminTemp + "Struct-" + pattern.numero + ".tif");
                 }
+                Console.WriteLine("\nApplication terminée, appuyer sur une touche pour fermer");
                 Console.ReadKey();
-                suppressionDossierTemp();
             }catch(Exception e)
             {
+                Console.WriteLine("\nApplication terminée avec erreur, appuyer sur une touche pour fermer");
                 Console.WriteLine(e);
                 Console.ReadKey();
             }
+            //suppressionDossierTemp();
         }
     }
 }
