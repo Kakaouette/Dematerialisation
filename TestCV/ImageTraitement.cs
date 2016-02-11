@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace TestCV
 {
     //Classe listant une série de méthode permettant la modification d'image (Classe Mat)
-    class ImageTraitement
+    public class ImageTraitement
     {
         //Retourne une image convertit en binaire via la méthode Otsu
         public Mat convertBinOtsu(Mat Img_Org_Gray)

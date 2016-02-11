@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,7 @@ namespace TestCV
     //définition de zone où se trouve plusieurs chaîne de caractère
     //La zone est un rectangle défini en pixel, le tableau contient plusieurs 
     //chaîne de caractère qui devrait se trouver dans cette zone (en théorie, cela dépend du décalage par rapport au modèle lors de la numérisation)
-    class ZoneVerif
+    public class ZoneVerif
     {
         public readonly Rectangle zone;
         public readonly String[] motsCherche;
@@ -31,5 +31,10 @@ namespace TestCV
             s = s.Substring(0, s.Length - 2);
             return s + "]}";
         }
+    }
+
+    public class ZoneVerifCollection : Collection<ZoneVerif>
+    {
+        
     }
 }

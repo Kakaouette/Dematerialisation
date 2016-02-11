@@ -5,17 +5,19 @@ using System.Drawing;
 using System.IO;
 using System.Configuration;
 using System.Drawing.Imaging;
+using Numerisation_GIST;
+using Emgu.CV.Structure;
 
 namespace TestCV
 {
-    class Program
+    public class Program
     {
         public static String cheminImage;
         public static String cheminTemp;
         private static Size tailleImg;
-        //Classe contenant les fonction lié à la console (Tesseract)
-        public readonly static ConsoleFunct console = new ConsoleFunct();
-        //Classe contenant les fonction lié au traitement d'image (rognage, binarisation,...)
+        //Classe contenant les méthodes lié à tesseract
+        public static TesseractTraitement console { get; private set; }
+        //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageTraitement imgTraitement = new ImageTraitement();
         //Liste les images contenu dans le dossier cheminImage
         private static List<Mat> lesImages;
@@ -30,9 +32,11 @@ namespace TestCV
                 cheminImage = ConfigurationManager.AppSettings["cheminImage"];
                 cheminTemp = ConfigurationManager.AppSettings["cheminTemp"];
                 tailleImg = new Size(int.Parse(ConfigurationManager.AppSettings["tailleImg.w"]), int.Parse(ConfigurationManager.AppSettings["tailleImg.h"]));
-                //String lesZones = ConfigurationManager.AppSettings["LesZones"];
+                String tessdata = ConfigurationManager.AppSettings["tessdata"];
+                console = new TesseractTraitement(tessdata);
             }catch(Exception e)
             {
+                Console.WriteLine(e);
                 Console.WriteLine("Erreur lors du chargement de la configuration, vérifiez le fichier de configuration."); 
                 Console.WriteLine("L'application va s'arrêter");
                 Console.ReadKey();
@@ -186,7 +190,28 @@ namespace TestCV
         }
 
         static void Main(string[] args)
-        {
+        {/*
+            //Test pour retrouver la case coché
+
+            initVariable();
+            creerDossierTemp();
+            System.Environment.Exit(1);
+            Mat imgt = CvInvoke.Imread("D:\\Desktop\\IMG\\Template\\test.tif", Emgu.CV.CvEnum.LoadImageType.Grayscale);
+
+            imgt = imgTraitement.convertBinOtsu(imgt);
+            try {
+                ImageTemplate template = new ImageTemplate();
+                template.RLSA(imgt);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            Console.WriteLine("fin");
+            Console.ReadKey();
+            System.Environment.Exit(1);
+            */
+
             Console.WriteLine("======================================================================================");
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
@@ -209,35 +234,40 @@ namespace TestCV
             Console.WriteLine("======================================================================================");
             Console.WriteLine("===================================== Recherche ======================================");
             Console.WriteLine("======================================================================================");
-
-            foreach (Mat img in lesImages)
-            {
-                Console.WriteLine("Image " + (lesImages.IndexOf(img) + 1));
-                foreach (PatternPage pattern in lesImagesZoneTemp)
+            try {
+                foreach (Mat img in lesImages)
                 {
-                    //Si l'image correspond au pattern, suppression du pattern dans la liste temp
-                    if (pattern.isPage(img))
+                    Console.WriteLine("Image " + (lesImages.IndexOf(img) + 1));
+                    foreach (PatternPage pattern in lesImagesZoneTemp)
                     {
-                        lesCorrespondances.Add(pattern, img);
-                        //Commenté pour voir si le pattern ne correspond pas a plusieurs image
-                        lesImagesZoneTemp.Remove(pattern);
-                        Console.WriteLine("\tPage Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
-                        break;
+                        //Si l'image correspond au pattern, suppression du pattern dans la liste temp
+                        if (pattern.isPage(img))
+                        {
+                            lesCorrespondances.Add(pattern, img);
+                            //Commenté pour voir si le pattern ne correspond pas a plusieurs image
+                            lesImagesZoneTemp.Remove(pattern);
+                            Console.WriteLine("\tPage Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
+                            break;
+                        }
                     }
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
-            }
 
-            Console.WriteLine("======================================================================================");
-            Console.WriteLine("====================================== Résultat ======================================");
-            Console.WriteLine("======================================================================================");
+                Console.WriteLine("======================================================================================");
+                Console.WriteLine("====================================== Résultat ======================================");
+                Console.WriteLine("======================================================================================");
 
-            foreach (PatternPage pattern in lesCorrespondances.Keys)
+                foreach (PatternPage pattern in lesCorrespondances.Keys)
+                {
+                    Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
+                }
+                Console.ReadKey();
+                suppressionDossierTemp();
+            }catch(Exception e)
             {
-                Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
+                Console.WriteLine(e);
+                Console.ReadKey();
             }
-            Console.ReadKey();
-            suppressionDossierTemp();
         }
     }
 }
