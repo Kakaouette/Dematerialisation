@@ -260,8 +260,9 @@ namespace TestCV
                 foreach (PatternPage pattern in lesCorrespondances.Keys)
                 {
                     Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
+                    //Calcul et enregistre l'image après un RLSA
                     Mat structImg = template.RLSA(imgTraitement.convertBinOtsu(lesCorrespondances[pattern]));
-                    structImg.Save(cheminTemp + "Struct-" + pattern.numero + ".tif");
+                    structImg.Save(cheminTemp + "RLSA-" + pattern.numero + ".tif");
                 }
                 Console.WriteLine("\nApplication terminée, appuyer sur une touche pour fermer");
                 Console.ReadKey();
