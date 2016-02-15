@@ -40,5 +40,12 @@ namespace TestCV
         {
             return new  Mat(img.ToImage<Gray, Byte>().Resize(longueur, largeur, Emgu.CV.CvEnum.Inter.Linear, false).Mat, new Rectangle(0, 0, longueur, largeur));
         }
+
+        //Charge une image en niveau de gris et la retourne  (il y a une nouvelle instanciation a cause de problème de mémoire,...)
+        public Mat chargerImage(String path)
+        {
+            Mat imgR = CvInvoke.Imread(path, Emgu.CV.CvEnum.LoadImageType.Grayscale);
+            return new Mat(imgR, imgR.ToImage<Gray, byte>().ROI);
+        }
     }
 }

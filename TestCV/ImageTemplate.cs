@@ -5,9 +5,8 @@ using System.Drawing;
 
 namespace Numerisation_GIST
 {
-    class ImageTemplate
+    public class ImageTemplate
     {
-        //Implémentaition de RLSA (j'ai rien compris mais ça marche) retourne le document structuré
         public Mat RLSAH(Mat tmpImg)
         {
             int hor_thres = 22;
@@ -16,7 +15,6 @@ namespace Numerisation_GIST
             Image<Gray, byte> img = tmpImg.ToImage<Gray, byte>();
             Byte[,,] data = img.Data;
 
-            //Console.WriteLine("Data size=" + tmpImg.Data);
             for (int i = 0; i < tmpImg.Rows; i++)
             {
                 for (int j = 0; j < tmpImg.Cols; j++)
@@ -31,7 +29,6 @@ namespace Numerisation_GIST
                                 {
                                     if (i >= 0 && j2 >= 0 )
                                     {
-                                        //Console.WriteLine("Data primary acces=[" + i + ", " + j2 + ", " + 0 + "]");
                                         data[i, j2, 0] = 0;
                                     }
                                 }
@@ -65,7 +62,6 @@ namespace Numerisation_GIST
             Image<Gray, byte> img = tmpImg.ToImage<Gray, byte>();
             Byte[,,] data = img.Data;
 
-            //Console.WriteLine("Data size=" + tmpImg.Data);
             for (int i = 0; i < tmpImg.Cols; i++)
             {
                 for (int j = 0; j < tmpImg.Rows; j++)
@@ -80,7 +76,6 @@ namespace Numerisation_GIST
                                 {
                                     if (i >= 0 && j2 >= 0)
                                     {
-                                        //Console.WriteLine("Data primary acces=[" + i + ", " + j2 + ", " + 0 + "]");
                                         data[j2, i, 0] = 0;
                                     }
                                 }
@@ -106,6 +101,7 @@ namespace Numerisation_GIST
             return new Mat(img.Mat, img.ROI);
         }
 
+        //Implémentaition de RLSA (j'ai rien compris mais ça marche) retourne le document structuré
         public Mat RLSA(Mat tmpImg)
         {
             Mat vertical = RLSAV(tmpImg);

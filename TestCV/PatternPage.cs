@@ -10,17 +10,20 @@ namespace TestCV
     {
         public readonly int numero;
         public List<ZoneVerif> lesZones {get; private set; }
+        public Mat image { get; private set; }
 
-        public PatternPage(int numero, List<ZoneVerif> lesZones)
+        public PatternPage(int numero, List<ZoneVerif> lesZones, string file)
         {
             this.numero = numero;
             this.lesZones = lesZones;
+            this.image = Program.imgTraitement.chargerImage(file);
         }
 
-        public PatternPage(int numero)
+        public PatternPage(int numero, string file)
         {
             this.numero = numero;
             this.lesZones = new List<ZoneVerif>();
+            this.image = Program.imgTraitement.chargerImage(file);
         }
 
         //Vérifie qu'un des mot est présent dans la chaîne, si oui renvoi true, sinon false

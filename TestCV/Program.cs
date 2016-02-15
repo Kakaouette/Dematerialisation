@@ -12,6 +12,7 @@ namespace TestCV
 {
     public class Program
     {
+        public static String cheminModele;
         public static String cheminImage;
         public static String cheminTemp;
         private static Size tailleImg;
@@ -19,6 +20,7 @@ namespace TestCV
         public static TesseractTraitement console { get; private set; }
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageTraitement imgTraitement = new ImageTraitement();
+        public readonly static ImageTemplate template = new ImageTemplate();
         //Liste les images contenu dans le dossier cheminImage
         private static List<Mat> lesImages;
         //Liste les pattern image (zone, mots à cherchés, numéro de page,...)
@@ -29,6 +31,7 @@ namespace TestCV
         {
             try
             {
+                cheminModele = ConfigurationManager.AppSettings["cheminModele"];
                 cheminImage = ConfigurationManager.AppSettings["cheminImage"];
                 cheminTemp = ConfigurationManager.AppSettings["cheminTemp"];
                 tailleImg = new Size(int.Parse(ConfigurationManager.AppSettings["tailleImg.w"]), int.Parse(ConfigurationManager.AppSettings["tailleImg.h"]));
@@ -61,44 +64,44 @@ namespace TestCV
             Console.WriteLine("Initialisation des patterns\n");
             lesImagesZone = new List<PatternPage>();
             //Création de page
-            PatternPage p1 = new PatternPage(1);
+            PatternPage p1 = new PatternPage(1, cheminModele + "1.tif");
             //Création de zone de recherche, le rectangle est une zone à rogner sur l'image, 
             //le tableau de mot est une liste de mot que l'ont peut trouver (dépend de si la numérisation n'a pas de décalage avec le modèle)
             p1.lesZones.Add(new ZoneVerif(new Rectangle(34, 772, 812, 442), new string[] {"biotechnologie", "biochimie"}));
             p1.lesZones.Add(new ZoneVerif(new Rectangle(76, 1522, 655, 299), new string[] {"informatique", "décision", "réhabilitation"}));
             Console.WriteLine(p1.ToString());
 
-            PatternPage p2 = new PatternPage(2);
+            PatternPage p2 = new PatternPage(2, cheminModele + "2.tif");
             p2.lesZones.Add(new ZoneVerif(new Rectangle(0, 1090, 604, 366), new string[] { "situation actuelle"}));
             p2.lesZones.Add(new ZoneVerif(new Rectangle(90, 1750, 840, 410), new string[] { "Enseignement secondaire", "Type de bac"}));
             Console.WriteLine(p2.ToString());
 
-            PatternPage p3 = new PatternPage(3);
+            PatternPage p3 = new PatternPage(3, cheminModele + "3.tif");
             p3.lesZones.Add(new ZoneVerif(new Rectangle(50, 1476, 1126, 402), new string[] {"évaluation de français", "Si oui, lequel", "référence pour les langues", "autres connaissances linguistiques" }));
             p3.lesZones.Add(new ZoneVerif(new Rectangle(0, 1826, 570, 270), new string[] {"anglais", "niveau obtenu", "autre langue"}));
             Console.WriteLine(p3.ToString());
 
-            PatternPage p4 = new PatternPage(4);
+            PatternPage p4 = new PatternPage(4, cheminModele + "4.tif");
             p4.lesZones.Add(new ZoneVerif(new Rectangle(0, 801, 1254, 549), new string[] { "en tant que", "Dernière entreprise ou organisme" }));
             p4.lesZones.Add(new ZoneVerif(new Rectangle(0, 2184, 1329, 600), new string[] { "un stage", "celui-ci s'est il", "contrat de travail" }));
             Console.WriteLine(p4.ToString());
 
-            PatternPage p5 = new PatternPage(5);
+            PatternPage p5 = new PatternPage(5, cheminModele + "5.tif");
             p5.lesZones.Add(new ZoneVerif(new Rectangle(0, 0, 1164, 531), new string[] { "Pour les formations en apprentissage", "Avez vous trouvé une entreprise"}));
             p5.lesZones.Add(new ZoneVerif(new Rectangle(0, 1638, 1212, 630), new string[] { "Certifie sur l'honneur", "Certifie sur ihonneur", "exactitude des renseignements" }));
             Console.WriteLine(p5.ToString());
 
-            PatternPage p6 = new PatternPage(6);
+            PatternPage p6 = new PatternPage(6, cheminModele + "6.tif");
             p6.lesZones.Add(new ZoneVerif(new Rectangle(642, 3, 1134, 441), new string[] { "Informations sur l’apprentissage", "Informations sur l'apprentissage", "Informations sur iapprentissage" }));
             p6.lesZones.Add(new ZoneVerif(new Rectangle(0, 1038, 996, 633), new string[] { "Processus de candidature", "La durée légale du travail", "Le recrutement en licence pro" }));
             Console.WriteLine(p6.ToString());
 
-            PatternPage p7 = new PatternPage(7);
+            PatternPage p7 = new PatternPage(7, cheminModele + "7.tif");
             p7.lesZones.Add(new ZoneVerif(new Rectangle(16, 1390, 632, 306), new string[] {"classement", "discipline"}));
             p7.lesZones.Add(new ZoneVerif(new Rectangle(0, 1956, 576, 298), new string[] {"signature", "fait le", "important : cette fiche"}));
             Console.WriteLine(p7.ToString());
 
-            PatternPage p8 = new PatternPage(8);
+            PatternPage p8 = new PatternPage(8, cheminModele + "8.tif");
             p8.lesZones.Add(new ZoneVerif(new Rectangle(0, 0, 1035, 552), new string[] { "Pièces à joindre au dossier", "Pour les documents rédigées", "Photocopie du ou des diplômes"}));
             p8.lesZones.Add(new ZoneVerif(new Rectangle(441, 1014, 1110, 597), new string[] { "université de la rochelle", "avenue michel crépeau"}));
             Console.WriteLine(p8.ToString());
@@ -131,14 +134,22 @@ namespace TestCV
                 return false;
             }
 
+            int j = 1;
             foreach (string fichierImg in tif)
             {
                 Console.WriteLine("Chargement de " + fichierImg);
-                Mat img = CvInvoke.Imread(fichierImg, Emgu.CV.CvEnum.LoadImageType.Grayscale);
-                lesImages.Add(img);
+                Mat img = imgTraitement.chargerImage(fichierImg);
                 //Vérification de l'image 
                 if (!verifImg(fichierImg, img))
                     return false;
+
+                int i = 1;
+                foreach (Mat imgV in lesImages)
+                {
+                    imgV.Save(cheminTemp + j + i + ".tif");
+                    i++;
+                }
+                j++;
             }
             return true;
         }
@@ -146,9 +157,7 @@ namespace TestCV
         //Vérifie que les images chargé sont conformes (redimentionne les images trop grande)
         static bool verifImg(string path, Mat img)
         {
-            int i = 1;
-
-            //Récupération DPI
+            //Récupération PPP (Mat semble passer l'image en 96DPI qq soit sa taille original donc on recharge via un objet C#)
             Bitmap btp = new Bitmap(path);
             if(btp.HorizontalResolution < 240 || btp.VerticalResolution < 240)
             {
@@ -164,10 +173,7 @@ namespace TestCV
             {
                 if((img.Size.Height > (tailleImg.Height - 25)) && (img.Size.Width > (tailleImg.Width - 25)))
                 {
-                    Mat imgR = imgTraitement.redimImage(img, tailleImg.Width, tailleImg.Height);
-                    int index = lesImages.IndexOf(img);
-                    lesImages.RemoveAt(index);
-                    lesImages.Insert(index, imgR);
+                    img = imgTraitement.redimImage(img, tailleImg.Width, tailleImg.Height);
                 }
                 else
                 {
@@ -177,6 +183,7 @@ namespace TestCV
                     return false;
                 }
             }
+            lesImages.Add(img);
             return true;
         }
 
@@ -190,27 +197,7 @@ namespace TestCV
         }
 
         static void Main(string[] args)
-        {/*
-            //Test pour retrouver la case coché
-
-            initVariable();
-            creerDossierTemp();
-            Mat imgt = CvInvoke.Imread("..\\..\\Include\\IMG\\Template\\test.tif", Emgu.CV.CvEnum.LoadImageType.Grayscale);
-
-            imgt = imgTraitement.convertBinOtsu(imgt);
-            try {
-                ImageTemplate template = new ImageTemplate();
-                template.RLSA(imgt);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            Console.WriteLine("fin");
-            Console.ReadKey();
-            System.Environment.Exit(1);
-            */
-
+        {
             Console.WriteLine("======================================================================================");
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
@@ -223,7 +210,7 @@ namespace TestCV
                 Console.ReadKey();
                 System.Environment.Exit(1);
             }
-
+            
             //Dictionnaire contenant pour chaque pattern, la page numérisé
             Dictionary<PatternPage, Mat> lesCorrespondances = new Dictionary<PatternPage, Mat>();
 
@@ -255,14 +242,10 @@ namespace TestCV
                 Console.WriteLine("======================================================================================");
                 Console.WriteLine("====================================== Résultat ======================================");
                 Console.WriteLine("======================================================================================");
-                ImageTemplate template = new ImageTemplate();
                 
                 foreach (PatternPage pattern in lesCorrespondances.Keys)
                 {
                     Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
-                    //Calcul et enregistre l'image après un RLSA
-                    Mat structImg = template.RLSA(imgTraitement.convertBinOtsu(lesCorrespondances[pattern]));
-                    structImg.Save(cheminTemp + "RLSA-" + pattern.numero + ".tif");
                 }
                 Console.WriteLine("\nApplication terminée, appuyer sur une touche pour fermer");
                 Console.ReadKey();
