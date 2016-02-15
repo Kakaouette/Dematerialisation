@@ -13,39 +13,34 @@ namespace TestCV
     public class ImageTraitement
     {
         //Retourne une image convertit en binaire via la méthode Otsu
-        public Mat convertBinOtsu(Mat Img_Org_Gray)
+        public Image<Gray, byte> convertBinOtsu(Image<Gray, byte> Img_Org_Gray)
         {
+            Image<Gray, byte> src = Img_Org_Gray.Clone();
             //Init image de destination
-            Mat Img_Dest_Gray = new Mat();
+            Image<Gray, byte> dest = new Image<Gray, byte>(Img_Org_Gray.Size);
             //calcul de Otsu
-            CvInvoke.Threshold(Img_Org_Gray, Img_Dest_Gray, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
+            CvInvoke.Threshold(src, dest, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
             //retourne l'image en binaire
-            return Img_Dest_Gray;
+            return dest;
         }
 
         //Retourne une nouvelle image rognée
-        public Mat rognerImage(Mat img, int x, int y, int longueur, int largeur)
+        public Image<Gray, byte> rognerImage(Image<Gray, byte> img, int x, int y, int longueur, int largeur)
         {
-            return new Mat(img, new System.Drawing.Rectangle(x, y, longueur, largeur));
+            return new Mat(img.Mat, new System.Drawing.Rectangle(x, y, longueur, largeur)).ToImage<Gray, byte>();
         }
 
         //Retourne une nouvelle image rognée
-        public Mat rognerImage(Mat img, System.Drawing.Rectangle rect)
+        public Image<Gray, byte> rognerImage(Image<Gray, byte> img, System.Drawing.Rectangle rect)
         {
-            return new Mat(img, rect);
+            return new Mat(img.Mat, rect).ToImage<Gray, byte>();
         }
 
-        //Redimentionne
-        public Mat redimImage(Mat img, int longueur, int largeur)
+        //Redimensionne
+        public Image<Gray, byte> redimImage(Image<Gray, byte> img, int longueur, int largeur)
         {
-            return new  Mat(img.ToImage<Gray, Byte>().Resize(longueur, largeur, Emgu.CV.CvEnum.Inter.Linear, false).Mat, new Rectangle(0, 0, longueur, largeur));
-        }
-
-        //Charge une image en niveau de gris et la retourne  (il y a une nouvelle instanciation a cause de problème de mémoire,...)
-        public Mat chargerImage(String path)
-        {
-            Mat imgR = CvInvoke.Imread(path, Emgu.CV.CvEnum.LoadImageType.Grayscale);
-            return new Mat(imgR, imgR.ToImage<Gray, byte>().ROI);
+            Image<Gray, byte> imgR = img.Clone();
+            return imgR.Resize(longueur, largeur, Emgu.CV.CvEnum.Inter.Linear, false);
         }
     }
 }

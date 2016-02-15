@@ -7,17 +7,16 @@ namespace Numerisation_GIST
 {
     public class ImageTemplate
     {
-        public Mat RLSAH(Mat tmpImg)
+        private Image<Gray, byte> RLSAH(Image<Gray, byte> img)
         {
             int hor_thres = 22;
             int zero_count = 0;
             int one_flag = 0;
-            Image<Gray, byte> img = tmpImg.ToImage<Gray, byte>();
             Byte[,,] data = img.Data;
 
-            for (int i = 0; i < tmpImg.Rows; i++)
+            for (int i = 0; i < img.Mat.Rows; i++)
             {
-                for (int j = 0; j < tmpImg.Cols; j++)
+                for (int j = 0; j < img.Mat.Cols; j++)
                 {
                     if (data[i, j, 0] == 0)
                     {
@@ -50,21 +49,19 @@ namespace Numerisation_GIST
                     }
                 }
             }
-            img.Data = data;
-            return new Mat(img.Mat, img.ROI);
+            return new Image<Gray, byte>(data);
         }
 
-        public Mat RLSAV(Mat tmpImg)
+        private Image<Gray, byte> RLSAV(Image<Gray, byte> img)
         {
             int hor_thres = 5;
             int zero_count = 0;
             int one_flag = 0;
-            Image<Gray, byte> img = tmpImg.ToImage<Gray, byte>();
             Byte[,,] data = img.Data;
 
-            for (int i = 0; i < tmpImg.Cols; i++)
+            for (int i = 0; i < img.Mat.Cols; i++)
             {
-                for (int j = 0; j < tmpImg.Rows; j++)
+                for (int j = 0; j < img.Mat.Rows; j++)
                 {
                     if (data[j, i, 0] == 0)
                     {
@@ -97,16 +94,16 @@ namespace Numerisation_GIST
                     }
                 }
             }
-            img.Data = data;
-            return new Mat(img.Mat, img.ROI);
+            return new Image<Gray, byte>(data);
         }
 
         //Implémentaition de RLSA (j'ai rien compris mais ça marche) retourne le document structuré
-        public Mat RLSA(Mat tmpImg)
+        public Image<Gray, byte> RLSA(Image<Gray, byte> tmpImg)
         {
-            Mat vertical = RLSAV(tmpImg);
-            Mat horizontal = RLSAH(tmpImg);
-            Mat structure = tmpImg.Clone();
+            Image<Gray, byte> calcul = tmpImg.Clone();
+            Image<Gray, byte> vertical = RLSAV(calcul);
+            Image<Gray, byte> horizontal = RLSAH(calcul);
+            Image<Gray, byte> structure = tmpImg.Clone();
 
             CvInvoke.BitwiseAnd(vertical, horizontal, structure);
             return structure;

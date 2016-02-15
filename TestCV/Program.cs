@@ -15,14 +15,14 @@ namespace TestCV
         public static String cheminModele;
         public static String cheminImage;
         public static String cheminTemp;
-        private static Size tailleImg;
+        public static Size tailleImg;
         //Classe contenant les méthodes lié à tesseract
         public static TesseractTraitement console { get; private set; }
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageTraitement imgTraitement = new ImageTraitement();
-        public readonly static ImageTemplate template = new ImageTemplate();
+        public readonly static ImageTemplate imgTemplate = new ImageTemplate();
         //Liste les images contenu dans le dossier cheminImage
-        private static List<Mat> lesImages;
+        private static List<Image<Gray, byte>> lesImages;
         //Liste les pattern image (zone, mots à cherchés, numéro de page,...)
         private static List<PatternPage> lesImagesZone;
 
@@ -118,10 +118,10 @@ namespace TestCV
         }
 
         //récupération des image en tif dans le dossier spécifié
-        static private bool initMat()
+        static private bool initImage()
         {
             Console.WriteLine("Chargement des images\n");
-            lesImages = new List<Mat>();
+            lesImages = new List<Image<Gray, byte>>();
 
             string[] tif = Directory.GetFiles(cheminImage, "*.tif");
 
@@ -134,30 +134,21 @@ namespace TestCV
                 return false;
             }
 
-            int j = 1;
             foreach (string fichierImg in tif)
             {
                 Console.WriteLine("Chargement de " + fichierImg);
-                Mat img = imgTraitement.chargerImage(fichierImg);
+                Image<Gray, byte> img = new Image<Gray, byte>(fichierImg);
                 //Vérification de l'image 
                 if (!verifImg(fichierImg, img))
                     return false;
-
-                int i = 1;
-                foreach (Mat imgV in lesImages)
-                {
-                    imgV.Save(cheminTemp + j + i + ".tif");
-                    i++;
-                }
-                j++;
             }
             return true;
         }
 
         //Vérifie que les images chargé sont conformes (redimentionne les images trop grande)
-        static bool verifImg(string path, Mat img)
+        static bool verifImg(string path, Image<Gray, byte> img)
         {
-            //Récupération PPP (Mat semble passer l'image en 96DPI qq soit sa taille original donc on recharge via un objet C#)
+            //Récupération PPP (Image<Gray, byte> semble passer l'image en 96DPI qq soit sa taille original donc on recharge via un objet C#)
             Bitmap btp = new Bitmap(path);
             if(btp.HorizontalResolution < 240 || btp.VerticalResolution < 240)
             {
@@ -204,7 +195,7 @@ namespace TestCV
             initVariable();
             //creerDossierTemp();
             initImageZone();
-            if (!initMat())
+            if (!initImage())
             {
                 Console.WriteLine("L'application va s'arrêter");
                 Console.ReadKey();
@@ -212,7 +203,7 @@ namespace TestCV
             }
             
             //Dictionnaire contenant pour chaque pattern, la page numérisé
-            Dictionary<PatternPage, Mat> lesCorrespondances = new Dictionary<PatternPage, Mat>();
+            Dictionary<PatternPage, Image<Gray, byte>> lesCorrespondances = new Dictionary<PatternPage, Image<Gray, byte>>();
 
             //Clone des pattern
             List<PatternPage> lesImagesZoneTemp = new List<PatternPage>(lesImagesZone);
@@ -221,9 +212,10 @@ namespace TestCV
             Console.WriteLine("===================================== Recherche ======================================");
             Console.WriteLine("======================================================================================");
             try {
-                foreach (Mat img in lesImages)
+                foreach (Image<Gray, byte> img in lesImages)
                 {
                     Console.WriteLine("Image " + (lesImages.IndexOf(img) + 1));
+                    int i = 1;
                     foreach (PatternPage pattern in lesImagesZoneTemp)
                     {
                         //Si l'image correspond au pattern, suppression du pattern dans la liste temp

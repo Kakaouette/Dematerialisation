@@ -1,4 +1,5 @@
 ﻿using Emgu.CV;
+using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
 
@@ -10,20 +11,20 @@ namespace TestCV
     {
         public readonly int numero;
         public List<ZoneVerif> lesZones {get; private set; }
-        public Mat image { get; private set; }
+        public Image<Gray, byte> image { get; private set; }
 
         public PatternPage(int numero, List<ZoneVerif> lesZones, string file)
         {
             this.numero = numero;
             this.lesZones = lesZones;
-            this.image = Program.imgTraitement.chargerImage(file);
+            this.image = new Image<Gray, byte>(file);
         }
 
         public PatternPage(int numero, string file)
         {
             this.numero = numero;
             this.lesZones = new List<ZoneVerif>();
-            this.image = Program.imgTraitement.chargerImage(file);
+            this.image = new Image<Gray, byte>(file);
         }
 
         //Vérifie qu'un des mot est présent dans la chaîne, si oui renvoi true, sinon false
@@ -43,16 +44,15 @@ namespace TestCV
         }
 
         //vérifie que la page en paramètre appartient au pattern (true si oui)
-        public bool isPage(Mat img)
+        public bool isPage(Image<Gray, byte> img)
         {
             //Passage en binaire
-            Mat imgBin = Program.imgTraitement.convertBinOtsu(img);
+            Image<Gray, byte> imgBin = Program.imgTraitement.convertBinOtsu(img);
             int i = 1;
             foreach (ZoneVerif z in this.lesZones)
             {
                 //découpe & sauvegarde
-                Mat imgR = Program.imgTraitement.rognerImage(imgBin, z.zone);
-                imgR.Save(Program.cheminTemp + this.numero + "-" + i + "-crop-page.tif");
+                Image<Gray, byte> imgR = Program.imgTraitement.rognerImage(imgBin, z.zone);
                 //tesseract
                 String texteTesseract = Program.console.tesseractAnalyse(imgR);
                 //Si le texte reconnu par tesseract ne correspond pas à celui de la zone, return false

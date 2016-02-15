@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.OCR;
+using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace TestCV
             tesseract = new Tesseract(tessdata, "fra", OcrEngineMode.TesseractCubeCombined);
         }
 
-        public String tesseractAnalyse(Mat img)
+        public String tesseractAnalyse(Image<Gray, byte> img)
         {
             tesseract.Recognize(img);
             return tesseract.GetText();
