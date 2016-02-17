@@ -85,10 +85,10 @@ namespace Numerisation_GIST
                                 SetProperty(prop, 2);
                                 break;
                             case 6147: //ppp horizontal 
-                                SetProperty(prop, Program.scanDPI);
+                                SetProperty(prop, Program.numerisationDPI);
                                 break;
                             case 6148: //ppp vertical 
-                                SetProperty(prop, Program.scanDPI);
+                                SetProperty(prop, Program.numerisationDPI);
                                 break;
                             case 6149: //x point where to start scan 
                                 SetProperty(prop, 0);

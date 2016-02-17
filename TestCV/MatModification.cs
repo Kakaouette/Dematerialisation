@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace Numerisation_GIST
 {
-    public class ImageTemplate
+    public class MatModification
     {
         private Image<Gray, byte> RLSAH(Image<Gray, byte> img)
         {

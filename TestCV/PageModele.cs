@@ -1,34 +1,47 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace Numerisation_GIST
 {
     //Représente un pattern de page avec son numéro de page et une liste de zone
     //Contient toutes les méthodes permettant de vérifié qu'une image (Objet Mat) appartient au pattern
-    class PatternPage
+    public class PageModele
     {
-        public readonly int numero;
-        public List<ZoneVerif> lesZones {get; private set; }
+        public int numero { get; set; }
+        public List<ZoneTexte> lesZonesTextuelle { get; set; }
+        public string cheminImage { get; set; }
+        [JsonIgnore]
         public Image<Gray, byte> image { get; private set; }
 
-        public PatternPage(int numero, List<ZoneVerif> lesZones, string file)
+        public PageModele()
         {
-            this.numero = numero;
-            this.lesZones = lesZones;
-            this.image = new Image<Gray, byte>(file);
+            this.numero = 0;
+            this.lesZonesTextuelle = null;
+            this.image = null;
         }
 
-        public PatternPage(int numero, string file)
+        public PageModele(int numero, List<ZoneTexte> lesZones, string file)
         {
             this.numero = numero;
-            this.lesZones = new List<ZoneVerif>();
+            this.lesZonesTextuelle = lesZones;
             this.image = new Image<Gray, byte>(file);
+            this.cheminImage = file;
+        }
+
+        public PageModele(int numero, string file)
+        {
+            this.numero = numero;
+            this.lesZonesTextuelle = new List<ZoneTexte>();
+            this.image = new Image<Gray, byte>(file);
+            this.cheminImage = file;
         }
 
         //Vérifie qu'un des mot est présent dans la chaîne, si oui renvoi true, sinon false
-        bool isPresent(String chaine, String[] mots)
+        bool textePresent(String chaine, String[] mots)
         {
             //Clonage dans une variable de la chaine en minuscule
             string chaineL = ((String)chaine.Clone()).ToLower();
@@ -44,19 +57,19 @@ namespace Numerisation_GIST
         }
 
         //vérifie que la page en paramètre appartient au pattern (true si oui)
-        public bool isPage(Image<Gray, byte> img)
+        public bool estPage(Image<Gray, byte> img)
         {
             //Passage en binaire
-            Image<Gray, byte> imgBin = Program.imgTraitement.convertBinOtsu(img);
+            Image<Gray, byte> imgBin = Program.imageModification.convertionBinaire(img);
             int i = 1;
-            foreach (ZoneVerif z in this.lesZones)
+            foreach (ZoneTexte z in this.lesZonesTextuelle)
             {
                 //découpe & sauvegarde
-                Image<Gray, byte> imgR = Program.imgTraitement.rognerImage(imgBin, z.zone);
+                Image<Gray, byte> imgR = Program.imageModification.rogner(imgBin, z.zone);
                 //tesseract
                 String texteTesseract = Program.console.tesseractAnalyse(imgR);
                 //Si le texte reconnu par tesseract ne correspond pas à celui de la zone, return false
-                if (!isPresent(texteTesseract, z.motsCherche))
+                if (!textePresent(texteTesseract, z.mots))
                 {
                     Console.WriteLine("\tPattern " + numero + " - Pas de correspondance avec la zone " + i);
                     return false;
@@ -69,10 +82,15 @@ namespace Numerisation_GIST
             return true;
         }
 
+        public void chargerImage()
+        {
+            this.image = new Image<Gray, Byte>(this.cheminImage);
+        }
+
         override public string ToString()
         {
-            String s = "PatternPage{numero=" + numero + ", zone=[";
-            foreach (ZoneVerif z in lesZones)
+            String s = "PageModele{numero=" + numero + ", chemin=" + cheminImage + ", lesZonesTextuelle=[";
+            foreach (ZoneTexte z in lesZonesTextuelle)
                 s += "{" + z + "}";
             s = s.Substring(0, s.Length-2);
             return s + "]}";

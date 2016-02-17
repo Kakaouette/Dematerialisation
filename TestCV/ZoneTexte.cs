@@ -10,31 +10,32 @@ namespace Numerisation_GIST
     //définition de zone où se trouve plusieurs chaîne de caractère
     //La zone est un rectangle défini en pixel, le tableau contient plusieurs 
     //chaîne de caractère qui devrait se trouver dans cette zone (en théorie, cela dépend du décalage par rapport au modèle lors de la numérisation)
-    public class ZoneVerif
+    public class ZoneTexte
     {
-        public readonly Rectangle zone;
-        public readonly String[] motsCherche;
+        public Rectangle zone { get; set; }
+        public String[] mots { get; set; }
 
-        public ZoneVerif(Rectangle zone, String[] motsCherche)
+        public ZoneTexte()
+        {
+            zone = new Rectangle();
+            mots = null;
+        }
+
+        public ZoneTexte(Rectangle zone, String[] motsCherche)
         {
             this.zone = zone;
-            this.motsCherche = motsCherche;
+            this.mots = motsCherche;
         }
 
         override public string ToString()
         {
-            string s = "ZoneVerif{Rectangle=" + this.zone + ", mots=[";
-            foreach(String m in this.motsCherche)
+            string s = "ZoneTextuel{zone=" + this.zone + ", mots=[";
+            foreach(String m in this.mots)
             {
                 s += m + ", ";
             }
             s = s.Substring(0, s.Length - 2);
             return s + "]}";
         }
-    }
-
-    public class ZoneVerifCollection : Collection<ZoneVerif>
-    {
-        
     }
 }
