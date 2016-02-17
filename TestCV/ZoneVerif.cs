@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestCV
+namespace Numerisation_GIST
 {
     //définition de zone où se trouve plusieurs chaîne de caractère
     //La zone est un rectangle défini en pixel, le tableau contient plusieurs 

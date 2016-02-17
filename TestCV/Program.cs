@@ -1,5 +1,4 @@
 ﻿using System;
-using Emgu.CV;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -7,8 +6,9 @@ using System.Configuration;
 using System.Drawing.Imaging;
 using Numerisation_GIST;
 using Emgu.CV.Structure;
+using Emgu.CV;
 
-namespace TestCV
+namespace Numerisation_GIST
 {
     public class Program
     {
@@ -22,6 +22,7 @@ namespace TestCV
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageTraitement imgTraitement = new ImageTraitement();
         public readonly static ImageTemplate imgTemplate = new ImageTemplate();
+        public readonly static Numerisation numerisation = new Numerisation();
         //Liste les images contenu dans le dossier cheminImage
         private static List<Image<Gray, byte>> lesImages;
         //Liste les pattern image (zone, mots à cherchés, numéro de page,...)
@@ -128,7 +129,7 @@ namespace TestCV
             string[] tif = Directory.GetFiles(cheminImage, "*.tif");
 
             //Vérification du nombre d'image comparé au nombre de pattern
-            if (tif.Length != lesImagesZone.Count)
+            if (tif.Length < lesImagesZone.Count)
             {
                 Console.WriteLine("Le nombre d'image scanné est inférieur au nombre d'image modèle :");
                 Console.WriteLine("Image scanné : " + lesImages.Count);
@@ -189,14 +190,47 @@ namespace TestCV
             Directory.Delete(cheminTemp);
         }
 
+        static void Scan()
+        {
+            Console.WriteLine("Début de scan");
+            //Suppression des fichiers dans le dossier image
+            foreach (String pathF in Directory.GetFiles(cheminImage))
+            {
+                File.Delete(pathF);
+            }
+
+            //Si null, il n'y a pas de scanner disponible
+            if(numerisation.deviceID == null)
+            {
+                Console.WriteLine("\nApplication terminée, impossible d'effectuer un scan, appuyez sur une touche pour fermer");
+                Console.ReadKey();
+                System.Environment.Exit(1);
+            }
+
+            List<Image> lesImagesS = numerisation.Scan();
+            int i = 1;
+
+            if(lesImagesS == null)
+            {
+                return;
+            }
+
+            foreach (Image imgS in lesImagesS)
+            {
+                imgS.Save(cheminImage + i + ".tif");
+                i++;
+            }
+            Console.WriteLine("Fin de scan\n");
+        }
+
         static void Main(string[] args)
         {
             Console.WriteLine("======================================================================================");
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
-            initVariable();            
-
-            //creerDossierTemp();
+            initVariable();
+            Scan();
+            creerDossierTemp();
             initImageZone();
             if (!initImage())
             {
@@ -241,15 +275,15 @@ namespace TestCV
                 {
                     Console.WriteLine("Page Pattern " + pattern.numero + " = Image " + (lesImages.IndexOf(lesCorrespondances[pattern]) + 1));
                 }
-                Console.WriteLine("\nApplication terminée, appuyer sur une touche pour fermer");
+                Console.WriteLine("\nApplication terminée, appuyez sur une touche pour fermer");
                 Console.ReadKey();
             }catch(Exception e)
             {
-                Console.WriteLine("\nApplication terminée avec erreur, appuyer sur une touche pour fermer");
+                Console.WriteLine("\nApplication terminée avec erreur, appuyez sur une touche pour fermer");
                 Console.WriteLine(e);
                 Console.ReadKey();
             }
-            //suppressionDossierTemp();
+            suppressionDossierTemp();
         }
     }
 }

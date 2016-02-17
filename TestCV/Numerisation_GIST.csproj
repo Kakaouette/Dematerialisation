@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TestCV.Program</StartupObject>
+    <StartupObject>Numerisation_GIST.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Emgu.CV.UI">

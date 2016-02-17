@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestCV
+namespace Numerisation_GIST
 {
     //Classe listant une série de méthode intéragissant avec la console windows (notamment Tesseract)
     public class TesseractTraitement

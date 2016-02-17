@@ -3,7 +3,7 @@ using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
 
-namespace TestCV
+namespace Numerisation_GIST
 {
     //Représente un pattern de page avec son numéro de page et une liste de zone
     //Contient toutes les méthodes permettant de vérifié qu'une image (Objet Mat) appartient au pattern
