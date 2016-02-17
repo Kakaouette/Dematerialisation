@@ -22,11 +22,20 @@ namespace Numerisation_GIST
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageTraitement imgTraitement = new ImageTraitement();
         public readonly static ImageTemplate imgTemplate = new ImageTemplate();
-        public readonly static Numerisation numerisation = new Numerisation();
+        public readonly static Numerisation numerisation;// = new Numerisation();
         //Liste les images contenu dans le dossier cheminImage
         private static List<Image<Gray, byte>> lesImages;
         //Liste les pattern image (zone, mots à cherchés, numéro de page,...)
         private static List<PatternPage> lesImagesZone;
+
+        static String verifChemin(string chemin)
+        {
+            if(!chemin[chemin.Length - 1].Equals("\\"))
+            {
+                chemin = chemin + "\\";
+            }
+            return chemin;
+        }
 
         //Charge certaines variable externalisé dans un fichier de config (App.config)
         static private void initVariable()
@@ -34,13 +43,22 @@ namespace Numerisation_GIST
             try
             {
                 scanDPI = int.Parse(ConfigurationManager.AppSettings["scanDPI"]);
-                cheminModele = ConfigurationManager.AppSettings["cheminModele"];
-                cheminImage = ConfigurationManager.AppSettings["cheminImage"];
-                cheminTemp = ConfigurationManager.AppSettings["cheminTemp"];
+                cheminModele = verifChemin(ConfigurationManager.AppSettings["cheminModele"]);
+                cheminImage = verifChemin(ConfigurationManager.AppSettings["cheminImage"]);
+                cheminTemp = verifChemin(ConfigurationManager.AppSettings["cheminTemp"]);
                 tailleImg = new Size(int.Parse(ConfigurationManager.AppSettings["tailleImg.w"]), int.Parse(ConfigurationManager.AppSettings["tailleImg.h"]));
-                String tessdata = ConfigurationManager.AppSettings["tessdata"];
+                String tessdata = verifChemin(ConfigurationManager.AppSettings["tessdata"]);
                 console = new TesseractTraitement(tessdata);
-            }catch(Exception e)
+            }
+            catch (System.FormatException e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Erreur lors du chargement de la configuration : scanDPI et tailleImg doivent être des nombres");
+                Console.WriteLine("L'application va s'arrêter");
+                Console.ReadKey();
+                System.Environment.Exit(1);
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 Console.WriteLine("Erreur lors du chargement de la configuration, vérifiez le fichier de configuration."); 
@@ -190,6 +208,7 @@ namespace Numerisation_GIST
             Directory.Delete(cheminTemp);
         }
 
+        //Supression des fichiers dans le dossier cheminImage et scan
         static void Scan()
         {
             Console.WriteLine("Début de scan");
@@ -229,7 +248,8 @@ namespace Numerisation_GIST
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
             initVariable();
-            Scan();
+            //Scan a commenter si pas de scanner
+            //Scan();
             creerDossierTemp();
             initImageZone();
             if (!initImage())
