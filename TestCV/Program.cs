@@ -12,10 +12,11 @@ namespace TestCV
 {
     public class Program
     {
-        public static String cheminModele;
-        public static String cheminImage;
-        public static String cheminTemp;
-        public static Size tailleImg;
+        public static String cheminModele { get; private set; }
+        public static String cheminImage { get; private set; }
+        public static String cheminTemp { get; private set; }
+        public static Size tailleImg { get; private set; }
+        public static int scanDPI { get; private set; }
         //Classe contenant les méthodes lié à tesseract
         public static TesseractTraitement console { get; private set; }
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
@@ -31,6 +32,7 @@ namespace TestCV
         {
             try
             {
+                scanDPI = int.Parse(ConfigurationManager.AppSettings["scanDPI"]);
                 cheminModele = ConfigurationManager.AppSettings["cheminModele"];
                 cheminImage = ConfigurationManager.AppSettings["cheminImage"];
                 cheminTemp = ConfigurationManager.AppSettings["cheminTemp"];
@@ -192,7 +194,8 @@ namespace TestCV
             Console.WriteLine("======================================================================================");
             Console.WriteLine("=================================== Initialisation ===================================");
             Console.WriteLine("======================================================================================");
-            initVariable();
+            initVariable();            
+
             //creerDossierTemp();
             initImageZone();
             if (!initImage())
@@ -215,7 +218,6 @@ namespace TestCV
                 foreach (Image<Gray, byte> img in lesImages)
                 {
                     Console.WriteLine("Image " + (lesImages.IndexOf(img) + 1));
-                    int i = 1;
                     foreach (PatternPage pattern in lesImagesZoneTemp)
                     {
                         //Si l'image correspond au pattern, suppression du pattern dans la liste temp

@@ -1,0 +1,18 @@
+<setting name="LesZones" serializeAs="Xml">
+      <value>
+        <ArrayOfZoneVerif xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+          <ZoneVerif>
+            <Rectangle>
+              <x>34</x>
+              <y>772</y>
+              <width>812</width>
+              <heigth>442</heigth>
+            </Rectangle>
+            <ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+              <string>Value1</string>
+              <string>Value2</string>
+            </ArrayOfString>
+          </ZoneVerif>
+        </ArrayOfZoneVerif>
+      </value>
+    </setting>
