@@ -67,11 +67,11 @@ namespace Numerisation_GIST
                 //découpe & sauvegarde
                 Image<Gray, byte> imgR = Program.imageModification.rogner(imgBin, z.zone);
                 //tesseract
-                String texteTesseract = Program.console.tesseractAnalyse(imgR);
+                String texteTesseract = Program.tesseract.tesseractAnalyse(imgR);
                 //Si le texte reconnu par tesseract ne correspond pas à celui de la zone, return false
                 if (!textePresent(texteTesseract, z.mots))
                 {
-                    Console.WriteLine("\tPattern " + numero + " - Pas de correspondance avec la zone " + i);
+                    Console.WriteLine("\tPas de correspondance avec la zone " + i);
                     return false;
                 }
                 i++;

@@ -14,15 +14,15 @@ namespace Numerisation_GIST
     {
         public static String cheminModele { get; private set; }
         public static String cheminImage { get; private set; }
-        public static String cheminTemp { get; private set; }
+        public static String cheminTmp { get; private set; }
         public static Size tailleImg { get; private set; }
         public static int numerisationDPI { get; private set; }
         //Classe contenant les méthodes lié à tesseract
-        public static TesseractTraitement console { get; private set; }
+        public static TesseractTraitement tesseract { get; private set; }
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageModification imageModification = new ImageModification();
         public readonly static MatModification matModification = new MatModification();
-        public readonly static Numerisation numerisation;// = new Numerisation();
+        public static Numerisation numerisation;
         //Liste les images contenu dans le dossier cheminImage
         private static List<Image<Gray, byte>> lesImagesNum;
         //Liste les pattern image (zone, mots à cherchés, numéro de page,...)
@@ -40,67 +40,89 @@ namespace Numerisation_GIST
         //Charge certaines variable externalisé dans un fichier de config (App.config)
         static private void initVariable()
         {
+            Console.WriteLine("-------------------------------- Variables App.config --------------------------------\n");
             try
             {
-                numerisationDPI = int.Parse(ConfigurationManager.AppSettings["scanDPI"]);
+                numerisationDPI = int.Parse(ConfigurationManager.AppSettings["numerisationDPI"]);
                 cheminModele = verifChemin(ConfigurationManager.AppSettings["cheminModele"]);
                 cheminImage = verifChemin(ConfigurationManager.AppSettings["cheminImage"]);
-                cheminTemp = verifChemin(ConfigurationManager.AppSettings["cheminTemp"]);
+                cheminTmp = verifChemin(ConfigurationManager.AppSettings["cheminTemp"]);
                 tailleImg = new Size(int.Parse(ConfigurationManager.AppSettings["tailleImg.w"]), int.Parse(ConfigurationManager.AppSettings["tailleImg.h"]));
                 String tessdata = verifChemin(ConfigurationManager.AppSettings["tessdata"]);
-                console = new TesseractTraitement(tessdata);
+                tesseract = new TesseractTraitement(tessdata);
+                //a commenté si pas de scanner
+                //numerisation = new Numerisation();
+
+                Console.WriteLine("numerisationDPI\t="+ "\t" + numerisationDPI);
+                Console.WriteLine("cheminModele\t=" + "\t" + cheminModele);
+                Console.WriteLine("cheminImage\t=" + "\t" + cheminImage);
+                Console.WriteLine("cheminTemp\t=" + "\t" + cheminTmp);
+                Console.WriteLine("tailleImg\t=" + "\t" + tailleImg);
+                Console.WriteLine("tessdata\t=" + "\t" + tessdata);
+                Console.WriteLine();
+
+                if(numerisationDPI < 240)
+                {
+                    Console.WriteLine("numerisationDPI doit être égale ou supérieur à 240");
+                    throw new Exception();
+                }
             }
             catch (System.FormatException e)
             {
                 Console.WriteLine(e);
                 Console.WriteLine("Erreur lors du chargement de la configuration : scanDPI et tailleImg doivent être des nombres");
-                Console.WriteLine("L'application va s'arrêter");
-                Console.ReadKey();
-                System.Environment.Exit(1);
+                throw new Exception();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Console.WriteLine("Erreur lors du chargement de la configuration, vérifiez le fichier de configuration."); 
-                Console.WriteLine("L'application va s'arrêter");
-                Console.ReadKey();
-                System.Environment.Exit(1);
+                Console.WriteLine("Erreur lors du chargement de la configuration, vérifiez le fichier de configuration.");
+                throw new Exception();
             }
             
         }
 
         //Si le dossier Temp existe on le supprime, puis on le créer
-        static private void creerDossierTemp()
+        static private void creerDossierTmp()
         {
-            if (Directory.Exists(cheminTemp))
+            if (Directory.Exists(cheminTmp))
             {
-                foreach (String pathF in Directory.GetFiles(cheminTemp))
+                foreach (String pathF in Directory.GetFiles(cheminTmp))
                 {
                     File.Delete(pathF);
                 }
             }
             else {
-                Directory.CreateDirectory(cheminTemp);
+                Directory.CreateDirectory(cheminTmp);
             }
         }
 
         //init des image servant de modèle avec zone et mot à chercher (récupération d'un fichier en JSON)
         static private void initImageModele()
         {
-            Console.WriteLine("Initialisation des patterns\n");
+            Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
 
             try {
                 lesPagesModeles = JsonSerialization.ReadFromJsonFile<List<PageModele>>(cheminModele + "config-Modèle.json");
-            }catch(Exception e)
+            }
+            catch (FileNotFoundException e)
             {
-                Console.WriteLine("Erreur lors de la lecture du fichier JSON, le fichier existe-il ? L'application va s'arrêter");
+                Console.WriteLine("Erreur le fichier " + cheminModele + "config-Modèle.json" + " n'existe pas ! Impossible de démarrer, l'application va s'arrêter.");
+                Console.ReadKey();
                 System.Environment.Exit(1);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Erreur lors de la lecture du fichier JSON, le fichier existe-il ? L'application va s'arrêter");
+                throw new Exception();
             }
             
             foreach(PageModele page in lesPagesModeles)
             {
                 page.chargerImage();
-                Console.WriteLine(page);
+                Console.WriteLine(JsonSerialization.toJSON<PageModele>(page));
+                //Console.WriteLine(page);
             }
 
             Console.WriteLine('\n');
@@ -109,7 +131,7 @@ namespace Numerisation_GIST
         //récupération des image en tif dans le dossier spécifié
         static private bool initImageScan()
         {
-            Console.WriteLine("Chargement des images\n");
+            Console.WriteLine("---------------------------------- Images numérisées ---------------------------------\n");
             lesImagesNum = new List<Image<Gray, byte>>();
 
             string[] tif = Directory.GetFiles(cheminImage, "*.tif");
@@ -125,7 +147,7 @@ namespace Numerisation_GIST
 
             foreach (string fichierImg in tif)
             {
-                Console.WriteLine("Chargement de " + fichierImg);
+                Console.WriteLine(fichierImg);
                 Image<Gray, byte> img = new Image<Gray, byte>(fichierImg);
                 //Vérification de l'image 
                 if (!verifImg(fichierImg, img))
@@ -167,19 +189,19 @@ namespace Numerisation_GIST
             return true;
         }
 
-        static void suppressionDossierTemp()
+        static void suppressionDossierTmp()
         {
-            foreach(String pathF in Directory.GetFiles(cheminTemp))
+            foreach(String pathF in Directory.GetFiles(cheminTmp))
             {
                 File.Delete(pathF);
             }
-            Directory.Delete(cheminTemp);
+            Directory.Delete(cheminTmp);
         }
 
         //Supression des fichiers dans le dossier cheminImage et scan
         static void EffectuerUneNumerisation()
         {
-            Console.WriteLine("Début de la numérisation");
+            Console.WriteLine("------------------------------------ Numérisation ------------------------------------\n");
             //Suppression des fichiers dans le dossier image
             foreach (String fichier in Directory.GetFiles(cheminImage))
             {
@@ -189,9 +211,8 @@ namespace Numerisation_GIST
             //Si null, il n'y a pas de scanner disponible
             if(numerisation.deviceID == null)
             {
-                Console.WriteLine("\nApplication terminée, impossible d'effectuer un scan, appuyez sur une touche pour fermer");
-                Console.ReadKey();
-                System.Environment.Exit(1);
+                Console.WriteLine("Impossible d'effectuer un scan car il n'y a aucun scanner qui peut effectuer une numérisation");
+                throw new Exception();
             }
 
             List<Image> lesImagesNumeriser = numerisation.Scan();
@@ -204,65 +225,82 @@ namespace Numerisation_GIST
 
             foreach (Image img in lesImagesNumeriser)
             {
+                Console.WriteLine("Enregistrement de " + i + " dans " + cheminImage + i + ".tif");
                 img.Save(cheminImage + i + ".tif");
                 i++;
             }
-            Console.WriteLine("Fin de numérisation\n");
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("======================================================================================");
-            Console.WriteLine("=================================== Initialisation ===================================");
-            Console.WriteLine("======================================================================================");
-            initVariable();
-            //Scan a commenter si pas de scanner
-            //EffectuerUneNumerisation();
-            creerDossierTemp();
-            initImageModele();
-            if (!initImageScan())
+            try
             {
-                Console.WriteLine("L'application va s'arrêter");
-                Console.ReadKey();
-                System.Environment.Exit(1);
-            }
-
-            //Dictionnaire contenant pour chaque pattern, la page numérisé
-            Dictionary <PageModele, Image<Gray, byte>> lesCorrespondances = new Dictionary<PageModele, Image<Gray, byte>>();
-
-            //Clone des pattern
-            List<PageModele> lesImagesZoneTemp = new List<PageModele>(lesPagesModeles);
-
-            Console.WriteLine("======================================================================================");
-            Console.WriteLine("===================================== Recherche ======================================");
-            Console.WriteLine("======================================================================================");
-            try {
-                foreach (Image<Gray, byte> img in lesImagesNum)
+                Console.WriteLine("======================================================================================");
+                Console.WriteLine("=================================== Initialisation ===================================");
+                Console.WriteLine("======================================================================================");
+                initVariable();
+                //a commenter si pas de scanner
+                //EffectuerUneNumerisation();
+                creerDossierTmp();
+                initImageModele();
+                if (!initImageScan())
                 {
-                    Console.WriteLine("Image " + (lesImagesNum.IndexOf(img) + 1));
-                    foreach (PageModele modele in lesImagesZoneTemp)
+                    Console.WriteLine("L'application va s'arrêter");
+                    throw new Exception();
+                }
+
+                //Dictionnaire contenant pour chaque pattern, la page numérisé
+                Dictionary <PageModele, Image<Gray, byte>> lesCorrespondances = new Dictionary<PageModele, Image<Gray, byte>>();
+
+                //Clone des pattern
+                List<Image<Gray, Byte>> lesImagesNumTmp = new List<Image<Gray, Byte>>(lesImagesNum);
+
+                Console.WriteLine("\n======================================================================================");
+                Console.WriteLine("===================================== Recherche ======================================");
+                Console.WriteLine("======================================================================================");
+
+                foreach (PageModele modele in lesPagesModeles)
+                {
+                    Console.WriteLine("-------------------------------------- Modèle " + modele.numero + " --------------------------------------");
+                    foreach (Image<Gray, Byte> img in lesImagesNumTmp)
                     {
+                        Console.Write("Image " + (lesImagesNum.IndexOf(img)+1) + "\t");
                         //Si l'image correspond au pattern, suppression du pattern dans la liste temp
                         if (modele.estPage(img))
                         {
                             lesCorrespondances.Add(modele, img);
                             //Commenté pour voir si le pattern ne correspond pas a plusieurs image
-                            lesImagesZoneTemp.Remove(modele);
-                            Console.WriteLine("\tPage Pattern " + modele.numero + " = Image " + (lesImagesNum.IndexOf(lesCorrespondances[modele]) + 1));
+                            lesImagesNumTmp.Remove(img);
+                            Console.WriteLine("\tCorrespond");
                             break;
                         }
                     }
                     Console.WriteLine();
                 }
 
-                Console.WriteLine("======================================================================================");
+                Console.WriteLine("\n======================================================================================");
                 Console.WriteLine("====================================== Résultat ======================================");
                 Console.WriteLine("======================================================================================");
                 
                 foreach (PageModele modele in lesCorrespondances.Keys)
                 {
-                    Console.WriteLine("Page Modele " + modele.numero + " = Image " + (lesImagesNum.IndexOf(lesCorrespondances[modele]) + 1));
+                    Console.WriteLine("Modèle " + modele.numero + "\t=\tImage " + (lesImagesNum.IndexOf(lesCorrespondances[modele]) + 1));
                 }
+
+                if(lesCorrespondances.Keys.Count != lesPagesModeles.Count)
+                {
+                    String s = "Les modeles ";
+                    foreach(PageModele modele in lesPagesModeles)
+                    {
+                        if (!lesCorrespondances.ContainsKey(modele))
+                        {
+                            s += modele.numero + ", ";
+                        }
+                    }
+                    s = s.Substring(0, s.Length - 2);
+                    Console.WriteLine(s + " n'ont pas de correspondance avec les image numérisées");
+                }
+
                 Console.WriteLine("\nApplication terminée, appuyez sur une touche pour fermer");
                 Console.ReadKey();
             }catch(Exception e)
@@ -271,7 +309,7 @@ namespace Numerisation_GIST
                 Console.WriteLine(e);
                 Console.ReadKey();
             }
-            suppressionDossierTemp();
+            suppressionDossierTmp();
         }
     }
 }

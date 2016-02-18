@@ -32,6 +32,7 @@ namespace Numerisation_GIST
             {
                 Console.WriteLine(e);
                 Console.WriteLine("Problème lors de la communication avec le scanner : vérifiez les branchements, que le scanner est allumé et réessayez");
+                throw new Exception();
             }
 
             if (device != null)

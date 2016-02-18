@@ -57,5 +57,10 @@ namespace Numerisation_GIST
                     reader.Close();
             }
         }
+
+        public static String toJSON<T>(T objectToJson) where T : new()
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(objectToJson);
+        }
     }
 }
