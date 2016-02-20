@@ -11,9 +11,15 @@ namespace Numerisation_GIST
     //Contient toutes les méthodes permettant de vérifié qu'une image (Objet Mat) appartient au pattern
     public class PageModele
     {
+        [JsonRequired]
         public int numero { get; set; }
+
+        [JsonRequired]
         public List<ZoneTexte> lesZonesTextuelle { get; set; }
+
+        [JsonRequired]
         public string cheminImage { get; set; }
+
         [JsonIgnore]
         public Image<Gray, byte> image { get; private set; }
 
@@ -64,7 +70,7 @@ namespace Numerisation_GIST
             int i = 1;
             foreach (ZoneTexte z in this.lesZonesTextuelle)
             {
-                //découpe & sauvegarde
+                //découpe
                 Image<Gray, byte> imgR = Program.imageModification.rogner(imgBin, z.zone);
                 //tesseract
                 String texteTesseract = Program.tesseract.tesseractAnalyse(imgR);

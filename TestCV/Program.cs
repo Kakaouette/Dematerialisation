@@ -26,6 +26,8 @@ namespace Numerisation_GIST
         //Liste les images contenu dans le dossier cheminImage
         private static List<Image<Gray, byte>> lesImagesNum;
         //Liste les pattern image (zone, mots à cherchés, numéro de page,...)
+        private static Master M1;
+        private static Master M2;
         private static List<PageModele> lesPagesModeles;
 
         static String verifChemin(string chemin)
@@ -98,34 +100,40 @@ namespace Numerisation_GIST
         }
 
         //init des image servant de modèle avec zone et mot à chercher (récupération d'un fichier en JSON)
-        static private void initImageModele()
+        static private Master initImageModele(String master)
         {
-            Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
-
+            Master m = null;
+            Console.WriteLine(master);
             try {
-                lesPagesModeles = JsonSerialization.ReadFromJsonFile<List<PageModele>>(cheminModele + "config-Modèle.json");
+                m = JsonSerialization.ReadFromJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json");
             }
             catch (FileNotFoundException e)
             {
-                Console.WriteLine("Erreur le fichier " + cheminModele + "config-Modèle.json" + " n'existe pas ! Impossible de démarrer, l'application va s'arrêter.");
-                Console.ReadKey();
-                System.Environment.Exit(1);
+                Console.WriteLine("Erreur le fichier " + cheminModele + "config-Modèle-M1.json" + " n'existe pas !");
+                throw new Exception();
+            }
+            catch (Newtonsoft.Json.JsonSerializationException e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Erreur lors de la lecture du fichier JSON");
+                throw new Exception();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Console.WriteLine("Erreur lors de la lecture du fichier JSON, le fichier existe-il ? L'application va s'arrêter");
+                Console.WriteLine("Erreur lors de la lecture du fichier JSON");
                 throw new Exception();
             }
             
-            foreach(PageModele page in lesPagesModeles)
+            foreach(PageModele page in m.lesPagesModeles)
             {
                 page.chargerImage();
                 Console.WriteLine(JsonSerialization.toJSON<PageModele>(page));
-                //Console.WriteLine(page);
+                Console.WriteLine();
             }
 
             Console.WriteLine('\n');
+            return m;
         }
 
         //récupération des image en tif dans le dossier spécifié
@@ -135,15 +143,6 @@ namespace Numerisation_GIST
             lesImagesNum = new List<Image<Gray, byte>>();
 
             string[] tif = Directory.GetFiles(cheminImage, "*.tif");
-
-            //Vérification du nombre d'image comparé au nombre de pattern
-            if (tif.Length < lesPagesModeles.Count)
-            {
-                Console.WriteLine("Le nombre d'image scanné est inférieur au nombre d'image modèle :");
-                Console.WriteLine("Image scanné : " + lesImagesNum.Count);
-                Console.WriteLine("Image modèle : " + lesPagesModeles.Count);
-                return false;
-            }
 
             foreach (string fichierImg in tif)
             {
@@ -242,7 +241,10 @@ namespace Numerisation_GIST
                 //a commenter si pas de scanner
                 //EffectuerUneNumerisation();
                 creerDossierTmp();
-                initImageModele();
+                //Chargement des images modèle du master 1 et 2
+                Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
+                M1 = initImageModele("M1");
+                M2 = initImageModele("M2");
                 if (!initImageScan())
                 {
                     Console.WriteLine("L'application va s'arrêter");
@@ -254,10 +256,54 @@ namespace Numerisation_GIST
 
                 //Clone des pattern
                 List<Image<Gray, Byte>> lesImagesNumTmp = new List<Image<Gray, Byte>>(lesImagesNum);
-
-                Console.WriteLine("\n======================================================================================");
+                Console.WriteLine();
+                Console.WriteLine("======================================================================================");
                 Console.WriteLine("===================================== Recherche ======================================");
                 Console.WriteLine("======================================================================================");
+                Console.WriteLine("----------------------------------- Année de Master ----------------------------------");
+                if (M1.estMaster(lesImagesNum))
+                {
+                    Console.WriteLine("Les images scanné sont correspondent au Master 1");
+                    lesPagesModeles = M1.lesPagesModeles;
+                }else if (M2.estMaster(lesImagesNum))
+                {
+                    Console.WriteLine("Les images scanné sont correspondent au Master 2");
+                    lesPagesModeles = M2.lesPagesModeles;
+                }
+                else
+                {
+                    bool readKey = false;
+
+                    while (!readKey)
+                    {
+                        Console.WriteLine("Le master n'a pas pu être déterminé ! Es ce le master 1 ou 2 ? (répondez '1' ou '2')");
+                        Char rep = Console.ReadKey().KeyChar;
+
+                        if (rep.Equals('1'))
+                        {
+                            Console.WriteLine("Les images scanné sont correspondent au Master 1");
+                            lesPagesModeles = M1.lesPagesModeles;
+                            readKey = true;
+                        }
+                        else if (rep.Equals('2'))
+                        {
+                            Console.WriteLine("Les images scanné sont correspondent au Master 2");
+                            lesPagesModeles = M2.lesPagesModeles;
+                            readKey = true;
+                        }
+                        Console.WriteLine();
+                    }
+                 }
+
+                //Vérification du nombre d'image comparé au nombre de modèle
+
+                if (lesImagesNum.Count < lesPagesModeles.Count)
+                {
+                    Console.WriteLine("Le nombre d'image scanné est inférieur au nombre d'image modèle :");
+                    Console.WriteLine("Image scanné : " + lesImagesNum.Count);
+                    Console.WriteLine("Image modèle : " + lesPagesModeles.Count);
+                    throw new ArgumentException();
+                }
 
                 foreach (PageModele modele in lesPagesModeles)
                 {

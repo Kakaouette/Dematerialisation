@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JsonSerialization.cs" />
+    <Compile Include="Master.cs" />
     <Compile Include="Numerisation.cs" />
     <Compile Include="TesseractTraitement.cs" />
     <Compile Include="MatModification.cs" />
