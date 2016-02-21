@@ -214,7 +214,32 @@ namespace Numerisation_GIST
                 throw new Exception();
             }
 
-            List<Image> lesImagesNumeriser = numerisation.Scan();
+            bool continueNum = true;
+            List<Image> lesImagesNumeriser = new List<Image>();
+            while (continueNum)
+            {
+                lesImagesNumeriser.AddRange(numerisation.Scan());
+                bool readKey = false;
+
+                while (!readKey)
+                {
+                    Console.WriteLine("Continuer la numérisation ? (Répondez 'o' ou 'n')");
+                    Char rep = Console.ReadKey().KeyChar;
+
+                    if (rep.Equals('o'))
+                    {
+                        Console.WriteLine("Début d'une nouvelle numérisation");
+                        readKey = true;
+                    }
+                    else if (rep.Equals('n'))
+                    {
+                        Console.WriteLine("Fin de la numérisation");
+                        continueNum = false;
+                        readKey = true;
+                    }
+                    Console.WriteLine();
+                }
+            }
             int i = 1;
 
             if(lesImagesNumeriser == null)
