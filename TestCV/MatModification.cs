@@ -1,12 +1,17 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 
 namespace Numerisation_GIST
 {
     public class MatModification
     {
+        //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
+        public readonly static ImageModification imageModification = new ImageModification();
+
         private Image<Gray, byte> RLSAH(Image<Gray, byte> img)
         {
             int hor_thres = 22;
@@ -97,7 +102,7 @@ namespace Numerisation_GIST
             return new Image<Gray, byte>(data);
         }
 
-        //Implémentaition de RLSA (j'ai rien compris mais ça marche) retourne le document structuré
+        //Implémentation de RLSA (j'ai rien compris mais ça marche) retourne le document structuré
         public Image<Gray, byte> RLSA(Image<Gray, byte> tmpImg)
         {
             Image<Gray, byte> calcul = tmpImg.Clone();
@@ -107,6 +112,56 @@ namespace Numerisation_GIST
 
             CvInvoke.BitwiseAnd(vertical, horizontal, structure);
             return structure;
+        }
+
+        //Calcule le ratio de pixels noir entre une image modèle et une image scanné
+        public double RatioPixelsNoir(Image<Gray, byte> image, Image<Gray, byte> imageModele)
+        {
+            Image<Gray, byte> imageBinaire = new ImageModification().convertionBinaire(image);
+            Image<Gray, byte> imageModeleBinaire = new ImageModification().convertionBinaire(imageModele);
+
+            double blackPixelImage = (imageBinaire.Rows * imageBinaire.Cols) - imageBinaire.CountNonzero()[0];
+            double blackPixelImageModele = (imageModeleBinaire.Rows * imageModeleBinaire.Cols) - imageModeleBinaire.CountNonzero()[0];
+            double resultat = blackPixelImageModele / blackPixelImage;
+            Console.WriteLine("L'image modèle contient "+resultat*100+"% du total de pixels noirs de l'image scanné");
+
+            return resultat;
+        }
+
+        //Indique si les caches sont cochées ou non à partir de 2 listes de points données en paramètres. La 1ère liste permet de connaitre les coordonnées des cases pour cette image (l'image modèle), idem pour la 2ème liste mais avec la 2ème image.
+        public String [,] CaseCoche(List<Point> liste1, List<Point> liste2, Image<Gray,byte> imgModele, Image<Gray,byte> img)
+        {
+            int taille = liste1.Count;
+            String[,] resultat = new String[taille, 1];
+            Point[] tableau1 = new Point[taille];
+            Point[] tableau2 = new Point[taille];
+            liste1.CopyTo(tableau1);
+            liste2.CopyTo(tableau2);
+
+            Image<Gray, byte> imageModele;
+            Image<Gray, byte> image;
+
+            for (int i = 0; i < taille-1; i++ )
+            {
+                imageModele = imageModification.rogner(imgModele, tableau1[i].X, tableau1[i].Y, 50, 50);
+                image = imageModification.rogner(img, tableau2[i].X, tableau2[i].Y, 50, 50);
+
+                double ratio = RatioPixelsNoir(image, imageModele);
+                resultat[i, 0] = "Case 1";
+
+                if (ratio < Int32.Parse(ConfigurationManager.AppSettings["ratioCaseACocher"]))
+                {
+                    //La case est cochée
+                    resultat[i, 1] = "Cochée";
+                }
+                else
+                {
+                    //La case n'est pas cochée
+                    resultat[i, 1] = "Non cochée";
+                }
+            }
+
+            return resultat;
         }
     }
 }
