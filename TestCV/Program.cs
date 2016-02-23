@@ -17,6 +17,7 @@ namespace Numerisation_GIST
         public static String cheminTmp { get; private set; }
         public static Size tailleImg { get; private set; }
         public static int numerisationDPI { get; private set; }
+        public static int tailleCheckBox { get; private set; }
         //Classe contenant les méthodes lié à tesseract
         public static TesseractTraitement tesseract { get; private set; }
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
@@ -46,6 +47,7 @@ namespace Numerisation_GIST
             try
             {
                 numerisationDPI = int.Parse(ConfigurationManager.AppSettings["numerisationDPI"]);
+                tailleCheckBox = int.Parse(ConfigurationManager.AppSettings["tailleCheckBox"]);
                 cheminModele = verifChemin(ConfigurationManager.AppSettings["cheminModele"]);
                 cheminImage = verifChemin(ConfigurationManager.AppSettings["cheminImage"]);
                 cheminTmp = verifChemin(ConfigurationManager.AppSettings["cheminTemp"]);
@@ -130,6 +132,43 @@ namespace Numerisation_GIST
                 page.chargerImage();
                 Console.WriteLine(JsonSerialization.toJSON<PageModele>(page));
                 Console.WriteLine();
+            }
+
+            if (master.Equals("M2"))
+            {
+                PageModele p = m.lesPagesModeles[0];
+                p.marqueur = new Rectangle(130, 115, 335, 335);
+                PageModele p2 = m.lesPagesModeles[1];
+                p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
+                PageModele p3 = m.lesPagesModeles[2];
+                p3.marqueur = new Rectangle(135, 1355, 1845, 1425);
+                PageModele p4 = m.lesPagesModeles[3];
+                p4.marqueur = new Rectangle(135, 115, 1845, 190);
+                PageModele p5 = m.lesPagesModeles[4];
+                //A modifier ! on trouve pas ce qu'il faut comme marqueur
+                p5.marqueur = new Rectangle(130, 115, 335, 335);
+                PageModele p6 = m.lesPagesModeles[5];
+                p6.marqueur = new Rectangle(325, 1510, 1685, 1700);
+                PageModele p7 = m.lesPagesModeles[6];
+                p7.marqueur = new Rectangle(135, 115, 1845, 330);
+                PageModele p8 = m.lesPagesModeles[7];
+                p8.marqueur = new Rectangle(135, 1620, 1845, 1695);
+
+                p.casesACocher = new List<CaseACocher>();
+                p.casesACocher.Add(new CaseACocher(new Point(100, 825),"GenieBiotech"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 900),"Biochimie"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1045),"IngéBatGIEEER"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1170),"IngéBatTNCR"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1385),"ICONEIID"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1525),"ICONEIND"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1660),"ICONEISI"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1795),"ICONEApprenti"));
+                p.casesACocher.Add(new CaseACocher(new Point(100, 1865),"ICONEInitial"));
+                p.casesACocher.Add(new CaseACocher(new Point(10, 1935),"MSGM"));
+                p.casesACocher.Add(new CaseACocher(new Point(10, 2005),"MSPEGEEL"));
+                p.casesACocher.Add(new CaseACocher(new Point(10, 2075),"MSPEGGL"));
+                p.casesACocher.Add(new CaseACocher(new Point(10, 2145),"MSPEQTE"));
+                JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m,false);
             }
 
             Console.WriteLine('\n');
