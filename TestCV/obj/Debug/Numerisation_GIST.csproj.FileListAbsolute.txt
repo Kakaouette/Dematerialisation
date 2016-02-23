@@ -38,3 +38,6 @@ D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\obj\De
 D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\obj\Debug\Numerisation_GIST.csproj.ResolveComReference.cache
 D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\bin\Debug\Newtonsoft.Json.dll
 D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\bin\Debug\Newtonsoft.Json.xml
+D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\bin\Debug\NTwain.dll
+D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\bin\Debug\NTwain.pdb
+D:\OneDrive\Documents\Cours\Master\Projet\Démat\Dematerialisation\TestCV\bin\Debug\NTwain.xml

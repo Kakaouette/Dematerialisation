@@ -1,12 +1,31 @@
-﻿using System;
+﻿using NTwain;
+using NTwain.Data;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Windows.Media.Imaging;
 using WIA;
 
 namespace Numerisation_GIST
 {
-    public class Numerisation
+    public abstract class Numerisation
+    {
+        public Boolean ready;
+
+        public Numerisation()
+        {
+            ready = false;
+        }
+
+        public abstract List<Image> Scan();
+    }
+
+    public class NumerisationWIA : Numerisation
     {
         public String deviceID { get; private set; }
 
@@ -21,13 +40,13 @@ namespace Numerisation_GIST
         /// Use scanner to scan an image (with user selecting the scanner from a dialog).
         /// </summary>
         /// <returns>Scanned images.</returns>
-        public Numerisation()
+        public NumerisationWIA()
         {
             WIA.ICommonDialog dialog = new WIA.CommonDialog();
             WIA.Device device = null;
             try {
                 device = dialog.ShowSelectDevice
-                    (WIA.WiaDeviceType.ScannerDeviceType, true, false);
+                    (WIA.WiaDeviceType.UnspecifiedDeviceType, true, false);
             }catch(Exception e)
             {
                 Console.WriteLine(e);
@@ -38,6 +57,7 @@ namespace Numerisation_GIST
             if (device != null)
             {
                 this.deviceID = device.DeviceID;
+                this.ready = true;
             }
         }
         /// <summary>
@@ -45,8 +65,9 @@ namespace Numerisation_GIST
         /// </summary>
         /// <param name="scannerName"></param>
         /// <returns>Scanned images.</returns>
-        public List<Image> Scan()
+        public override List<Image> Scan()
         {
+            Console.WriteLine("Scan WIA");
             List<Image> images = new List<Image>();
             bool hasMorePages = true;
             while (hasMorePages)
@@ -188,6 +209,135 @@ namespace Numerisation_GIST
             public const uint WIA_DPS_FIRST = WIA_DPC_FIRST + WIA_RESERVED_FOR_NEW_PROPS;
             public const uint WIA_DPS_DOCUMENT_HANDLING_STATUS = WIA_DPS_FIRST + 13;
             public const uint WIA_DPS_DOCUMENT_HANDLING_SELECT = WIA_DPS_FIRST + 14;
+        }
+    }
+
+    public class NumerisationTwain : Numerisation
+    {
+        List<Image> lesImagesNum;
+
+        TwainSession session;
+        DataSource myDS;
+
+        public NumerisationTwain(){
+            lesImagesNum = new List<Image>();
+            ready = true;
+        }
+
+        //Peut permettre d'annuler un scan, appel lors du début du transfert
+        void session_SourceDisable(object sender, EventArgs e)
+        {
+            myDS.Close();
+            session.Close();
+        }
+
+        //Peut permettre d'annuler un scan, appel lors du début du transfert
+        void session_TransferReady(object sender, NTwain.TransferReadyEventArgs e)
+        {
+            
+        }
+
+
+        //Appel lorsque des données sont transférées
+        void session_DataTransferred(object sender, NTwain.DataTransferredEventArgs e)
+        {
+            if (e.NativeData != IntPtr.Zero)
+            {
+                Bitmap img = null;
+                //Need to save out the data.
+                Stream s = e.GetNativeImageStream();
+                BitmapSource bitmapsource = s.ConvertToWpfBitmap();
+
+                using (MemoryStream outStream = new MemoryStream())
+                {
+                    BitmapEncoder enc = new BmpBitmapEncoder();
+                    enc.Frames.Add(BitmapFrame.Create(bitmapsource));
+                    enc.Save(outStream);
+                    img = new Bitmap(outStream);
+                }
+
+                if (img != null)
+                {
+                    lesImagesNum.Add(img);
+                }
+            }
+        }
+
+        public override List<Image> Scan()
+        {
+            Console.WriteLine("Scan Twain");
+            lesImagesNum.Clear();
+            // can use the utility method to create appId or make one yourself
+            var appId = TWIdentity.CreateFromAssembly(DataGroups.Image, Assembly.GetExecutingAssembly());
+
+            // new it up and handle events
+            session = new TwainSession(appId);
+
+            session.TransferReady += session_TransferReady;
+            session.DataTransferred += session_DataTransferred;
+            session.SourceDisabled += session_SourceDisable;
+            
+            // finally open it
+            session.Open();
+            var t = session.GetEnumerator();
+
+            Console.WriteLine(t.ToString());
+            while (t.MoveNext())
+            {
+                Console.WriteLine(t.ConvertToString());
+            }
+
+
+
+            // choose and open the first source found
+            // note that TwainSession implements IEnumerable<DataSource> so we can use this extension method.
+            IEnumerable<DataSource> lesSources = session.GetSources();
+            Console.WriteLine("Nb Source : " + session.Count());
+            myDS = session.FirstOrDefault();
+            myDS.Open();
+
+            // All low-level triplet operations are defined through these properties.
+            // If the operation you want is not available, that most likely means 
+            // it's not for consumer use or it's been abstracted away with an equivalent API in this lib.
+            //myDS.DGControl;
+            //myDS.DGImage.;
+
+            // The wrapper has many methods that corresponds to the TWAIN capability triplet msgs like
+            // GetValues(), GetCurrent(), GetDefault(), SetValue(), etc.
+            // (see TWAIN spec for reference)
+
+
+            // This example sets pixel type of scanned image to BW and
+            // IPixelType is the wrapper property on the data source.
+            // The name of the wrapper property is the same as the CapabilityId enum.
+            PixelType typeCouleur = PixelType.Gray;
+
+            if (myDS.Capabilities.ICapPixelType.CanSet &&
+                myDS.Capabilities.ICapPixelType.GetValues().Contains(typeCouleur))
+            {
+                myDS.Capabilities.ICapPixelType.SetValue(typeCouleur);
+            }
+
+            //Même chose avec le DPI
+            TWFix32 DPI = Program.numerisationDPI;
+
+            if(myDS.Capabilities.ICapXResolution.CanSet &&
+                myDS.Capabilities.ICapXResolution.GetValues().Contains(DPI))
+            {
+                myDS.Capabilities.ICapXResolution.SetValue(DPI);
+            }
+
+            if (myDS.Capabilities.ICapYResolution.CanSet &&
+                myDS.Capabilities.ICapYResolution.GetValues().Contains(DPI))
+            {
+                myDS.Capabilities.ICapYResolution.SetValue(DPI);
+            }
+            
+            myDS.Enable(SourceEnableMode.ShowUI, false, System.IntPtr.Zero);
+
+            EventWaitHandle session_SourceDisable_Wait = new EventWaitHandle(false, EventResetMode.AutoReset);
+            session_SourceDisable_Wait.WaitOne();
+            return lesImagesNum;
         }
     }
 }

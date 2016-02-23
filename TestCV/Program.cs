@@ -53,7 +53,7 @@ namespace Numerisation_GIST
                 String tessdata = verifChemin(ConfigurationManager.AppSettings["tessdata"]);
                 tesseract = new TesseractTraitement(tessdata);
                 //a commenté si pas de scanner
-                //numerisation = new Numerisation();
+                numerisation = new NumerisationTwain();
 
                 Console.WriteLine("numerisationDPI\t="+ "\t" + numerisationDPI);
                 Console.WriteLine("cheminModele\t=" + "\t" + cheminModele);
@@ -206,9 +206,9 @@ namespace Numerisation_GIST
             {
                 File.Delete(fichier);
             }
-
+            
             //Si null, il n'y a pas de scanner disponible
-            if(numerisation.deviceID == null)
+            if(!numerisation.ready)
             {
                 Console.WriteLine("Impossible d'effectuer un scan car il n'y a aucun scanner qui peut effectuer une numérisation");
                 throw new Exception();
@@ -250,7 +250,7 @@ namespace Numerisation_GIST
             foreach (Image img in lesImagesNumeriser)
             {
                 Console.WriteLine("Enregistrement de " + i + " dans " + cheminImage + i + ".tif");
-                img.Save(cheminImage + i + ".tif");
+                img.Save(cheminTmp + i + ".tif");
                 i++;
             }
         }
@@ -259,6 +259,7 @@ namespace Numerisation_GIST
         {
             try
             {
+
                 Console.WriteLine("======================================================================================");
                 Console.WriteLine("=================================== Initialisation ===================================");
                 Console.WriteLine("======================================================================================");
@@ -301,7 +302,7 @@ namespace Numerisation_GIST
 
                     while (!readKey)
                     {
-                        Console.WriteLine("Le master n'a pas pu être déterminé ! Es ce le master 1 ou 2 ? (répondez '1' ou '2')");
+                        Console.WriteLine("Le master n'a pas pu être déterminé ! Est-ce le master 1 ou 2 ? (répondez '1' ou '2')");
                         Char rep = Console.ReadKey().KeyChar;
 
                         if (rep.Equals('1'))
@@ -349,7 +350,7 @@ namespace Numerisation_GIST
                     Console.WriteLine();
                 }
 
-                Console.WriteLine("\n======================================================================================");
+                Console.WriteLine("======================================================================================");
                 Console.WriteLine("====================================== Résultat ======================================");
                 Console.WriteLine("======================================================================================");
                 
