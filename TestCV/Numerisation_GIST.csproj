@@ -59,7 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CaseACocher.cs" />
     <Compile Include="JsonSerialization.cs" />
+    <Compile Include="Marqueurs.cs" />
     <Compile Include="Master.cs" />
     <Compile Include="Numerisation.cs" />
     <Compile Include="TesseractTraitement.cs" />

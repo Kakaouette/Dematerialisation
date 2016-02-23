@@ -3,6 +3,7 @@ using Emgu.CV.Structure;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Xml.Serialization;
 
 namespace Numerisation_GIST
@@ -13,6 +14,10 @@ namespace Numerisation_GIST
     {
         [JsonRequired]
         public int numero { get; set; }
+
+        public Rectangle marqueur { get; set; }
+
+        public List<CaseACocher> casesACocher { get; set; }
 
         [JsonRequired]
         public List<ZoneTexte> lesZonesTextuelle { get; set; }
