@@ -135,7 +135,7 @@ namespace Numerisation_GIST
             }
 
             /*
-            if (master.Equals("M1"))
+            if (master.Equals("M2"))
             {
                 PageModele p = m.lesPagesModeles[0];
                 p.marqueur = new Rectangle(130, 115, 335, 335);
@@ -155,6 +155,8 @@ namespace Numerisation_GIST
                 p.zoneInfos.Add(new ZoneInfo(300, 700, 903, 81, "INE"));
                 p.zoneInfos.Add(new ZoneInfo(310, 2432, 1143, 75, "2eme Voeu : Mention"));
                 p.zoneInfos.Add(new ZoneInfo(316, 2504, 1161, 77, "2eme Voeu : Parcours"));
+                p.zoneInfos.Add(new ZoneInfo(116, 503, 1766, 293, "Informations de l'étudiant"));
+                p.zoneInfos.Add(new ZoneInfo(98, 779, 1800, 1926, "Voeux de l'étudiant"));
 
                 PageModele p2 = m.lesPagesModeles[1];
                 p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
@@ -176,22 +178,28 @@ namespace Numerisation_GIST
                 //p2.zoneInfos.Add(new ZoneInfo(192, 1392, 1667, 161, "Situation actuelle : Étudiant"));
                 //p2.zoneInfos.Add(new ZoneInfo(508, 1700, 1267, 83, "Situation actuelle : Autre"));
                 p2.zoneInfos.Add(new ZoneInfo(102, 288, 1793, 515, "Tableau : Enseignement secondaire"));
+                p2.zoneInfos.Add(new ZoneInfo(101, 191, 1800, 1634, "Informations générales"));
+                p2.zoneInfos.Add(new ZoneInfo(80, 1941, 1844, 701, "Cursus"));
 
                 PageModele p3 = m.lesPagesModeles[2];
                 p3.marqueur = new Rectangle(135, 1355, 1845, 1425);
                 p3.zoneInfos = new List<ZoneInfo>();
                 p3.zoneInfos.Add(new ZoneInfo(100, 384, 1785, 917, "Tableau : Enseignement supérieur"));
+                p3.zoneInfos.Add(new ZoneInfo(86, 67, 1819, 1246, "Cursus"));
+                p3.zoneInfos.Add(new ZoneInfo(73, 1312, 1860, 1000, "Compétences linguistiques"));
 
                 PageModele p4 = m.lesPagesModeles[3];
                 p4.marqueur = new Rectangle(135, 115, 1845, 190);
                 p4.zoneInfos = new List<ZoneInfo>();
                 p4.zoneInfos.Add(new ZoneInfo(118, 274, 1763, 503, "Projet professionel"));
+                p4.zoneInfos.Add(new ZoneInfo(104, 197, 1789, 2528, "Projet professionel et expériences"));
 
                 PageModele p5 = m.lesPagesModeles[4];
                 //A modifier ! on trouve pas ce qu'il faut comme marqueur
                 p5.marqueur = new Rectangle(130, 115, 335, 335);
                 p5.zoneInfos = new List<ZoneInfo>();
                 p5.zoneInfos.Add(new ZoneInfo(118, 702, 1759, 2003, "Exposé des motivations personnelles et du projet d'études"));
+                p5.zoneInfos.Add(new ZoneInfo(114, 83, 1767, 2798, "Projet professionel et expériences"));
 
                 PageModele p6 = m.lesPagesModeles[5];
                 p6.marqueur = new Rectangle(325, 1510, 1685, 1700);
@@ -204,6 +212,7 @@ namespace Numerisation_GIST
                 p7.zoneInfos.Add(new ZoneInfo(314, 506, 1541, 79, "Parcours"));
                 p7.zoneInfos.Add(new ZoneInfo(128, 694, 1709, 93, "Nom et Prénom de l'étudiant"));
                 p7.zoneInfos.Add(new ZoneInfo(126, 872, 1725, 99, "Établissement fréquenté"));
+                p7.zoneInfos.Add(new ZoneInfo(104, 351, 1789, 1967, "Fiche confidentielle d'appréciation"));
 
                 PageModele p8 = m.lesPagesModeles[7];
                 p8.marqueur = new Rectangle(135, 1620, 1845, 1695);
@@ -350,7 +359,7 @@ namespace Numerisation_GIST
                 //Chargement des images modèle du master 1 et 2
                 Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
                 M1 = initImageModele("M1");
-                //M2 = initImageModele("M2");
+                M2 = initImageModele("M2");
                 if (!initImageScan())
                 {
                     Console.WriteLine("L'application va s'arrêter");
