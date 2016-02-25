@@ -134,43 +134,84 @@ namespace Numerisation_GIST
                 Console.WriteLine();
             }
 
-            if (master.Equals("M2"))
+            /*
+            if (master.Equals("M1"))
             {
                 PageModele p = m.lesPagesModeles[0];
                 p.marqueur = new Rectangle(130, 115, 335, 335);
+                p.casesACocher = new List<CaseACocher>();
+                p.casesACocher.Add(new CaseACocher(new Point(228, 1066), "Génie Biotechnologique et management en agro-alimentaire"));
+                p.casesACocher.Add(new CaseACocher(new Point(228, 1142), "Biochimie"));
+                p.casesACocher.Add(new CaseACocher(new Point(228, 1366), "Ingénierie du bâtiment : Gestion et Intégration de l'Efficacité Énergétique et des énergies renouvelables"));
+                p.casesACocher.Add(new CaseACocher(new Point(228, 1500), "Ingénierie du bâtiment : Techniques Nouvelles pour la Construction et la Réhabilitation"));
+                p.casesACocher.Add(new CaseACocher(new Point(228, 1774), "Ingénierie des contenus numériques en entreprise : Ingénierie de l'information et de la décision"));
+                p.casesACocher.Add(new CaseACocher(new Point(228, 1916), "Ingénierie des contenus numériques en entreprise : Ingénierie de la numérisation et de la dématérialisation"));
+                p.casesACocher.Add(new CaseACocher(new Point(228, 2058), "Ingénierie des contenus numériques en entreprise : Ingénierie des systèmes d'information"));
+                p.casesACocher.Add(new CaseACocher(new Point(230, 2194), "Mention Informatique : en apprentissage"));
+                p.casesACocher.Add(new CaseACocher(new Point(230, 2268), "Mention Informatique : en formation initiale classique"));
+                p.zoneInfos = new List<ZoneInfo>();
+                p.zoneInfos.Add(new ZoneInfo(280, 580, 807, 79, "Nom"));
+                p.zoneInfos.Add(new ZoneInfo(1228, 562, 567, 103, "Prenom"));
+                p.zoneInfos.Add(new ZoneInfo(300, 700, 903, 81, "INE"));
+                p.zoneInfos.Add(new ZoneInfo(310, 2432, 1143, 75, "2eme Voeu : Mention"));
+                p.zoneInfos.Add(new ZoneInfo(316, 2504, 1161, 77, "2eme Voeu : Parcours"));
+
                 PageModele p2 = m.lesPagesModeles[1];
                 p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
+                p2.zoneInfos = new List<ZoneInfo>();
+                p2.zoneInfos.Add(new ZoneInfo(229, 267, 1617, 85, "Nom"));
+                p2.zoneInfos.Add(new ZoneInfo(285, 419, 1569, 73, "Prenom"));
+                //p2.zoneInfos.Add(new ZoneInfo(384, 494, 1471, 71, "Nom Marital"));
+                p2.zoneInfos.Add(new ZoneInfo(246, 566, 997, 81, "N°INE"));
+                p2.zoneInfos.Add(new ZoneInfo(361, 639, 1500, 85, "Nationalité"));
+                p2.zoneInfos.Add(new ZoneInfo(596, 718, 1261, 79, "Date et lieu de naissance"));
+                p2.zoneInfos.Add(new ZoneInfo(251, 791, 1603, 79, "Pays"));
+                p2.zoneInfos.Add(new ZoneInfo(136, 868, 1719, 153, "Adresse"));
+                p2.zoneInfos.Add(new ZoneInfo(366, 1022, 253, 79, "Code postal"));
+                p2.zoneInfos.Add(new ZoneInfo(714, 1018, 1135, 83, "Ville"));
+                //p2.zoneInfos.Add(new ZoneInfo(250, 1096, 1605, 75, "Pays"));
+                p2.zoneInfos.Add(new ZoneInfo(256, 1166, 1149, 85, "Email"));
+                p2.zoneInfos.Add(new ZoneInfo(1480, 1170, 367, 81, "Téléphone"));
+                p2.zoneInfos.Add(new ZoneInfo(316, 2504, 1239, 89, "Nationalité"));
+                //p2.zoneInfos.Add(new ZoneInfo(192, 1392, 1667, 161, "Situation actuelle : Étudiant"));
+                //p2.zoneInfos.Add(new ZoneInfo(508, 1700, 1267, 83, "Situation actuelle : Autre"));
+                p2.zoneInfos.Add(new ZoneInfo(102, 288, 1793, 515, "Tableau : Enseignement secondaire"));
+
                 PageModele p3 = m.lesPagesModeles[2];
                 p3.marqueur = new Rectangle(135, 1355, 1845, 1425);
+                p3.zoneInfos = new List<ZoneInfo>();
+                p3.zoneInfos.Add(new ZoneInfo(100, 384, 1785, 917, "Tableau : Enseignement supérieur"));
+
                 PageModele p4 = m.lesPagesModeles[3];
                 p4.marqueur = new Rectangle(135, 115, 1845, 190);
+                p4.zoneInfos = new List<ZoneInfo>();
+                p4.zoneInfos.Add(new ZoneInfo(118, 274, 1763, 503, "Projet professionel"));
+
                 PageModele p5 = m.lesPagesModeles[4];
                 //A modifier ! on trouve pas ce qu'il faut comme marqueur
                 p5.marqueur = new Rectangle(130, 115, 335, 335);
+                p5.zoneInfos = new List<ZoneInfo>();
+                p5.zoneInfos.Add(new ZoneInfo(118, 702, 1759, 2003, "Exposé des motivations personnelles et du projet d'études"));
+
                 PageModele p6 = m.lesPagesModeles[5];
                 p6.marqueur = new Rectangle(325, 1510, 1685, 1700);
+
                 PageModele p7 = m.lesPagesModeles[6];
                 p7.marqueur = new Rectangle(135, 115, 1845, 330);
+                p7.zoneInfos = new List<ZoneInfo>();
+                p7.zoneInfos.Add(new ZoneInfo(312, 350, 1737, 83, "Mention"));
+                p7.zoneInfos.Add(new ZoneInfo(326, 428, 1533, 79, "Spécialité"));
+                p7.zoneInfos.Add(new ZoneInfo(314, 506, 1541, 79, "Parcours"));
+                p7.zoneInfos.Add(new ZoneInfo(128, 694, 1709, 93, "Nom et Prénom de l'étudiant"));
+                p7.zoneInfos.Add(new ZoneInfo(126, 872, 1725, 99, "Établissement fréquenté"));
+
                 PageModele p8 = m.lesPagesModeles[7];
                 p8.marqueur = new Rectangle(135, 1620, 1845, 1695);
-
-                p.casesACocher = new List<CaseACocher>();
-                p.casesACocher.Add(new CaseACocher(new Point(100, 825),"GenieBiotech"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 900),"Biochimie"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1045),"IngéBatGIEEER"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1170),"IngéBatTNCR"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1385),"ICONEIID"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1525),"ICONEIND"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1660),"ICONEISI"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1795),"ICONEApprenti"));
-                p.casesACocher.Add(new CaseACocher(new Point(100, 1865),"ICONEInitial"));
-                p.casesACocher.Add(new CaseACocher(new Point(10, 1935),"MSGM"));
-                p.casesACocher.Add(new CaseACocher(new Point(10, 2005),"MSPEGEEL"));
-                p.casesACocher.Add(new CaseACocher(new Point(10, 2075),"MSPEGGL"));
-                p.casesACocher.Add(new CaseACocher(new Point(10, 2145),"MSPEQTE"));
-                JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m,false);
+                
+                JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m, false);
+                
             }
-
+            */
             Console.WriteLine('\n');
             return m;
         }
@@ -309,7 +350,7 @@ namespace Numerisation_GIST
                 //Chargement des images modèle du master 1 et 2
                 Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
                 M1 = initImageModele("M1");
-                M2 = initImageModele("M2");
+                //M2 = initImageModele("M2");
                 if (!initImageScan())
                 {
                     Console.WriteLine("L'application va s'arrêter");
