@@ -18,6 +18,8 @@ namespace Numerisation_GIST
         public Rectangle marqueur { get; set; }
 
         public List<CaseACocher> casesACocher { get; set; }
+        public List<ZoneInfo> zoneInfos { get; set; }
+        public List<ZoneInfo> rubriques { get; set; }
 
         [JsonRequired]
         public List<ZoneTexte> lesZonesTextuelle { get; set; }
