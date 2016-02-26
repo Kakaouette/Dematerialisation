@@ -16,6 +16,7 @@ namespace Numerisation_GIST
         public static Image<Gray, Byte> img2 { get; private set; }
         public static MatModification mat { get; private set; }
         public static List<Point> caseACocher;
+        public readonly static ImageModification imageModif = new ImageModification();
 
        /* static void Main(string[] agrs)
         {
@@ -57,13 +58,15 @@ namespace Numerisation_GIST
 
         }*/
 
-        public List<Point> patternFinding(Image<Gray, Byte> num, PageModele modele)
+        public List<CaseACocher> patternFinding(Image<Gray, Byte> num, PageModele modele)
         {
-            List<Point> lesPoints = new List<Point>();
+            List<CaseACocher> lesPoints = new List<CaseACocher>();
             Image<Gray, Byte> pattern = new ImageModification().rogner(modele.image, modele.marqueur);
             pattern = new ImageModification().convertionBinaire(pattern);
-            //pattern.Save(Program.cheminTmp + "test.tif");
+            pattern.Save("..\\..\\Include\\IMG\\TestTrans\\pattern.tif");
             Image<Gray, Byte> imgToShow = num.Copy();
+            imgToShow = new ImageModification().redimensionner(imgToShow, 1991, 2818);
+
 
             using (Image<Gray, float> result = num.MatchTemplate(pattern, Emgu.CV.CvEnum.TemplateMatchingType.CcoeffNormed))
             {
@@ -72,21 +75,24 @@ namespace Numerisation_GIST
                 Point[] minLocations, maxLocations;
                 result.MinMax(out minValues, out maxValues, out minLocations, out maxLocations);
 
-                if (maxValues[0] > 0.6)
+                if (maxValues[0] > 0.9)
                 {
-                    Rectangle match = new Rectangle(maxLocations[0],new Size(310,310));
+                    Rectangle match = new Rectangle(maxLocations[0],new Size(40,50));
                     imgToShow.Draw(match, new Gray(), 3);
                     foreach (CaseACocher p in modele.casesACocher)
                     {
-                        lesPoints.Add(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y));
-                        match = new Rectangle(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
+                        //lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y),p.nom));
+                        //match = new Rectangle(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
+                        lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + (p.coord.X - Program.p.marqueur.X), maxLocations[0].Y + (p.coord.Y - Program.p.marqueur.Y)), p.nom));
+                        match = new Rectangle(new Point(maxLocations[0].X + (p.coord.X - Program.p.marqueur.X), maxLocations[0].Y + (p.coord.Y - Program.p.marqueur.Y)), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
                         imgToShow.Draw(match, new Gray(), 3);
                     }
                     
                 }
 
             }
-            imgToShow.Save("..\\..\\Include\\IMG\\TestTrans\\testTrouve.tif");
+            imgToShow.Save("..\\..\\Include\\IMG\\TestTrans\\testTrouveScan.tif");
+            //modele.image.Save("..\\..\\Include\\IMG\\TestTrans\\testTrouveModele.tif");
             return lesPoints;
         }
     }

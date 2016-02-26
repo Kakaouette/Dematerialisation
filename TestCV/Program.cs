@@ -12,6 +12,8 @@ namespace Numerisation_GIST
 {
     public class Program
     {
+        public static PageModele p;
+        public static PageModele p2;
         public static String cheminModele { get; private set; }
         public static String cheminImage { get; private set; }
         public static String cheminTmp { get; private set; }
@@ -136,10 +138,11 @@ namespace Numerisation_GIST
 
             if (master.Equals("M2"))
             {
-                PageModele p = m.lesPagesModeles[0];
-                p.marqueur = new Rectangle(130, 115, 335, 335);
-                PageModele p2 = m.lesPagesModeles[1];
-                p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
+                p = m.lesPagesModeles[0];
+                p.marqueur = new Rectangle(160, 150, 200, 200);
+                
+                p2 = m.lesPagesModeles[1];
+                p2.marqueur = new Rectangle(340, 125, 875, 170);
                 PageModele p3 = m.lesPagesModeles[2];
                 p3.marqueur = new Rectangle(135, 1355, 1845, 1425);
                 PageModele p4 = m.lesPagesModeles[3];
@@ -308,13 +311,19 @@ namespace Numerisation_GIST
                 creerDossierTmp();
                 //Chargement des images modèle du master 1 et 2
                 Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
-                M1 = initImageModele("M1");
+               // M1 = initImageModele("M1");
                 M2 = initImageModele("M2");
                 if (!initImageScan())
                 {
                     Console.WriteLine("L'application va s'arrêter");
                     throw new Exception();
                 }
+
+                Marqueurs marq = new Marqueurs();
+                List<CaseACocher> lesCases = marq.patternFinding(lesImagesNum[7], M2.lesPagesModeles[0]);
+                //List<CaseACocher> lesCases = marq.patternFinding(p.image, M2.lesPagesModeles[0]);
+                matModification.CaseCoche(p, lesCases, lesImagesNum[7]);
+
 
                 //Dictionnaire contenant pour chaque pattern, la page numérisé
                 Dictionary <PageModele, Image<Gray, byte>> lesCorrespondances = new Dictionary<PageModele, Image<Gray, byte>>();

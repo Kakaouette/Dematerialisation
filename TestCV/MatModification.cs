@@ -12,7 +12,7 @@ namespace Numerisation_GIST
         //Classe contenant les méthodes lié au traitement d'image (rognage, binarisation,...)
         public readonly static ImageModification imageModification = new ImageModification();
 
-        private Image<Gray, byte> RLSAH(Image<Gray, byte> img)
+        public Image<Gray, byte> RLSAH(Image<Gray, byte> img)
         {
             int hor_thres = 22;
             int zero_count = 0;
@@ -57,7 +57,7 @@ namespace Numerisation_GIST
             return new Image<Gray, byte>(data);
         }
 
-        private Image<Gray, byte> RLSAV(Image<Gray, byte> img)
+        public Image<Gray, byte> RLSAV(Image<Gray, byte> img)
         {
             int hor_thres = 5;
             int zero_count = 0;
@@ -129,35 +129,39 @@ namespace Numerisation_GIST
         }
 
         //Indique si les caches sont cochées ou non à partir de 2 listes de points données en paramètres. La 1ère liste permet de connaitre les coordonnées des cases pour cette image (l'image modèle), idem pour la 2ème liste mais avec la 2ème image.
-        public String [,] CaseCoche(List<Point> liste1, List<Point> liste2, Image<Gray,byte> imgModele, Image<Gray,byte> img)
+        public String [,] CaseCoche(PageModele p, List<CaseACocher> liste, Image<Gray,byte> img)
         {
-            int taille = liste1.Count;
-            String[,] resultat = new String[taille, 1];
-            Point[] tableau1 = new Point[taille];
-            Point[] tableau2 = new Point[taille];
-            liste1.CopyTo(tableau1);
-            liste2.CopyTo(tableau2);
+            int taille = p.casesACocher.Count;
+            String[,] resultat = new String[taille, 2];
+            CaseACocher[] tableauModele = new CaseACocher[taille];
+            CaseACocher[] tableauNum = new CaseACocher[taille];
+            p.casesACocher.CopyTo(tableauModele);
+            liste.CopyTo(tableauNum);
 
             Image<Gray, byte> imageModele;
             Image<Gray, byte> image;
 
+
             for (int i = 0; i < taille-1; i++ )
             {
-                imageModele = imageModification.rogner(imgModele, tableau1[i].X, tableau1[i].Y, 50, 50);
-                image = imageModification.rogner(img, tableau2[i].X, tableau2[i].Y, 50, 50);
+                imageModele = imageModification.rogner(p.image, tableauModele[i].coord.X + p.marqueur.X, tableauModele[i].coord.Y + p.marqueur.Y, 50, 50);
+                imageModele.Save("..\\..\\Include\\IMG\\TestTrans\\testRognMod" + i + ".tif");
+                image = imageModification.rogner(img, tableauNum[i].coord.X, tableauNum[i].coord.Y, 50, 50);
+                image.Save("..\\..\\Include\\IMG\\TestTrans\\testRogn" + i + ".tif");
 
                 double ratio = RatioPixelsNoir(image, imageModele);
-                resultat[i, 0] = "Case 1";
-
-                if (ratio < Int32.Parse(ConfigurationManager.AppSettings["ratioCaseACocher"]))
+                resultat[i, 0] = tableauModele[i].nom;
+                if (ratio < double.Parse(ConfigurationManager.AppSettings["ratioCaseACocher"]))
                 {
                     //La case est cochée
                     resultat[i, 1] = "Cochée";
+                    //Console.WriteLine(resultat[i,0] + " coché");
                 }
                 else
                 {
                     //La case n'est pas cochée
                     resultat[i, 1] = "Non cochée";
+                    //Console.WriteLine(resultat[i,0] + " non coché");
                 }
             }
 

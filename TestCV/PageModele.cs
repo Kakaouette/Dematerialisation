@@ -26,7 +26,7 @@ namespace Numerisation_GIST
         public string cheminImage { get; set; }
 
         [JsonIgnore]
-        public Image<Gray, byte> image { get; private set; }
+        public Image<Gray, byte> image { get;  set; }
 
         public PageModele()
         {
