@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Configuration;
-using System.Drawing.Imaging;
-using Numerisation_GIST;
 using Emgu.CV.Structure;
 using Emgu.CV;
 
@@ -363,8 +361,9 @@ namespace Numerisation_GIST
                 creerDossierTmp();
                 //Chargement des images modèle du master 1 et 2
                 Console.WriteLine("---------------------------- Modèles dans le fichier JSON ----------------------------\n");
-                //M1 = initImageModele("M1");
+                M1 = initImageModele("M1");
                 M2 = initImageModele("M2");
+                
                 if (!initImageScan())
                 {
                     Console.WriteLine("L'application va s'arrêter");
@@ -469,13 +468,14 @@ namespace Numerisation_GIST
 
                 Console.WriteLine("\nApplication terminée, appuyez sur une touche pour fermer");
                 Console.ReadKey();
-            }catch(Exception e)
+            }
+            catch(Exception e)
             {
                 Console.WriteLine("\nApplication terminée avec erreur, appuyez sur une touche pour fermer");
                 Console.WriteLine(e);
                 Console.ReadKey();
             }
-            suppressionDossierTmp();
+            //suppressionDossierTmp();
         }
     }
 }
