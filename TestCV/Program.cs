@@ -135,57 +135,73 @@ namespace Numerisation_GIST
                 Console.WriteLine(JsonSerialization.toJSON<PageModele>(page));
                 Console.WriteLine();
             }
-            /*
+            
             if (master.Equals("M2"))
             {
-                PageModele p = m.lesPagesModeles[0];
-                p.marqueur = new Rectangle(130, 115, 335, 335);
-                PageModele p2 = m.lesPagesModeles[1];
-                p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
-                PageModele p3 = m.lesPagesModeles[2];
-                p3.marqueur = new Rectangle(135, 1355, 1845, 1425);
-                p3.zoneInfos = new List<ZoneInfo>();
-                p3.zoneInfos.Add(new ZoneInfo(100, 384, 1785, 917, "Tableau : Enseignement supérieur"));
-                p3.rubriques = new List<ZoneInfo>();
-                p3.rubriques.Add(new ZoneInfo(86, 67, 1819, 1246, "Cursus"));
-                p3.rubriques.Add(new ZoneInfo(73, 1312, 1860, 1000, "Compétences linguistiques"));
+                p = m.lesPagesModeles[0];
+                p.marqueur = new Rectangle(222, 916, 65, 65);
+                p.casesACocher = new List<CaseACocher>();
+                p.casesACocher.Add(new CaseACocher(new Point(222, 916), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 992), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 1145), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 1278), "test"));
 
-                PageModele p4 = m.lesPagesModeles[3];
-                p4.marqueur = new Rectangle(135, 115, 1845, 190);
-                p4.zoneInfos = new List<ZoneInfo>();
-                p4.zoneInfos.Add(new ZoneInfo(118, 274, 1763, 503, "Projet professionel"));
-                p4.rubriques = new List<ZoneInfo>();
-                p4.rubriques.Add(new ZoneInfo(104, 197, 1789, 2528, "Projet professionel et expériences"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 1506), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 1649), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 1792), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 1931), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(222, 2008), "test"));
 
-                PageModele p5 = m.lesPagesModeles[4];
-                //A modifier ! on trouve pas ce qu'il faut comme marqueur
-                p5.marqueur = new Rectangle(130, 115, 335, 335);
-                p5.zoneInfos = new List<ZoneInfo>();
-                p5.zoneInfos.Add(new ZoneInfo(118, 702, 1759, 2003, "Exposé des motivations personnelles et du projet d'études"));
-                p5.rubriques = new List<ZoneInfo>();
-                p5.rubriques.Add(new ZoneInfo(114, 83, 1767, 2798, "Projet professionel et expériences"));
+                p.casesACocher.Add(new CaseACocher(new Point(128, 2080), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(128, 2155), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(128, 2230), "test"));
+                p.casesACocher.Add(new CaseACocher(new Point(128, 2306), "test"));
+                /* PageModele p2 = m.lesPagesModeles[1];
+                 p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
+                 PageModele p3 = m.lesPagesModeles[2];
+                 p3.marqueur = new Rectangle(135, 1355, 1845, 1425);
+                 p3.zoneInfos = new List<ZoneInfo>();
+                 p3.zoneInfos.Add(new ZoneInfo(100, 384, 1785, 917, "Tableau : Enseignement supérieur"));
+                 p3.rubriques = new List<ZoneInfo>();
+                 p3.rubriques.Add(new ZoneInfo(86, 67, 1819, 1246, "Cursus"));
+                 p3.rubriques.Add(new ZoneInfo(73, 1312, 1860, 1000, "Compétences linguistiques"));
 
-                PageModele p6 = m.lesPagesModeles[5];
-                p6.marqueur = new Rectangle(325, 1510, 1685, 1700);
+                 PageModele p4 = m.lesPagesModeles[3];
+                 p4.marqueur = new Rectangle(135, 115, 1845, 190);
+                 p4.zoneInfos = new List<ZoneInfo>();
+                 p4.zoneInfos.Add(new ZoneInfo(118, 274, 1763, 503, "Projet professionel"));
+                 p4.rubriques = new List<ZoneInfo>();
+                 p4.rubriques.Add(new ZoneInfo(104, 197, 1789, 2528, "Projet professionel et expériences"));
 
-                PageModele p7 = m.lesPagesModeles[6];
-                p7.marqueur = new Rectangle(135, 115, 1845, 330);
-                p7.zoneInfos = new List<ZoneInfo>();
-                p7.zoneInfos.Add(new ZoneInfo(312, 350, 1737, 83, "Mention"));
-                p7.zoneInfos.Add(new ZoneInfo(326, 428, 1533, 79, "Spécialité"));
-                p7.zoneInfos.Add(new ZoneInfo(314, 506, 1541, 79, "Parcours"));
-                p7.zoneInfos.Add(new ZoneInfo(128, 694, 1709, 93, "Nom et Prénom de l'étudiant"));
-                p7.zoneInfos.Add(new ZoneInfo(126, 872, 1725, 99, "Établissement fréquenté"));
-                p7.rubriques = new List<ZoneInfo>();
-                p7.rubriques.Add(new ZoneInfo(104, 351, 1789, 1967, "Fiche confidentielle d'appréciation"));
+                 PageModele p5 = m.lesPagesModeles[4];
+                 //A modifier ! on trouve pas ce qu'il faut comme marqueur
+                 p5.marqueur = new Rectangle(130, 115, 335, 335);
+                 p5.zoneInfos = new List<ZoneInfo>();
+                 p5.zoneInfos.Add(new ZoneInfo(118, 702, 1759, 2003, "Exposé des motivations personnelles et du projet d'études"));
+                 p5.rubriques = new List<ZoneInfo>();
+                 p5.rubriques.Add(new ZoneInfo(114, 83, 1767, 2798, "Projet professionel et expériences"));
 
-                PageModele p8 = m.lesPagesModeles[7];
-                p8.marqueur = new Rectangle(135, 1620, 1845, 1695);
+                 PageModele p6 = m.lesPagesModeles[5];
+                 p6.marqueur = new Rectangle(325, 1510, 1685, 1700);
+
+                 PageModele p7 = m.lesPagesModeles[6];
+                 p7.marqueur = new Rectangle(135, 115, 1845, 330);
+                 p7.zoneInfos = new List<ZoneInfo>();
+                 p7.zoneInfos.Add(new ZoneInfo(312, 350, 1737, 83, "Mention"));
+                 p7.zoneInfos.Add(new ZoneInfo(326, 428, 1533, 79, "Spécialité"));
+                 p7.zoneInfos.Add(new ZoneInfo(314, 506, 1541, 79, "Parcours"));
+                 p7.zoneInfos.Add(new ZoneInfo(128, 694, 1709, 93, "Nom et Prénom de l'étudiant"));
+                 p7.zoneInfos.Add(new ZoneInfo(126, 872, 1725, 99, "Établissement fréquenté"));
+                 p7.rubriques = new List<ZoneInfo>();
+                 p7.rubriques.Add(new ZoneInfo(104, 351, 1789, 1967, "Fiche confidentielle d'appréciation"));
+
+                 PageModele p8 = m.lesPagesModeles[7];
+                 p8.marqueur = new Rectangle(135, 1620, 1845, 1695);*/
 
                 JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m, false);
                 
             }
-            */
+            
             Console.WriteLine('\n');
             return m;
         }
@@ -332,9 +348,12 @@ namespace Numerisation_GIST
                 }
 
                 Marqueurs marq = new Marqueurs();
-                List<CaseACocher> lesCases = marq.patternFinding(lesImagesNum[7], M2.lesPagesModeles[0]);
+                M2.lesPagesModeles[0].image.Save("..\\..\\Include\\IMG\\huehue.tif");
+                string s = "Parcours de test Parcours qui fait des Parcours";
+                
+                //List<CaseACocher> lesCases = marq.patternFinding(lesImagesNum[7], M2.lesPagesModeles[0]);
                 //List<CaseACocher> lesCases = marq.patternFinding(p.image, M2.lesPagesModeles[0]);
-                matModification.CaseCoche(p, lesCases, lesImagesNum[7]);
+                //matModification.CaseCoche(p, lesCases, lesImagesNum[7]);
 
 
                 //Dictionnaire contenant pour chaque pattern, la page numérisé

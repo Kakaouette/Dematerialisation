@@ -61,31 +61,37 @@ namespace Numerisation_GIST
         public List<CaseACocher> patternFinding(Image<Gray, Byte> num, PageModele modele)
         {
             List<CaseACocher> lesPoints = new List<CaseACocher>();
-            Image<Gray, Byte> pattern = new ImageModification().rogner(modele.image, modele.marqueur);
-            pattern = new ImageModification().convertionBinaire(pattern);
+            Image<Gray, Byte> pattern = imageModif.rogner(imageModif.convertionBinaire(modele.image), modele.marqueur);
             pattern.Save("..\\..\\Include\\IMG\\TestTrans\\pattern.tif");
+
             Image<Gray, Byte> imgToShow = num.Copy();
             imgToShow = new ImageModification().redimensionner(imgToShow, 1991, 2818);
+            imgToShow = imageModif.convertionBinaire(imgToShow);
+            imgToShow.Save("..\\..\\Include\\IMG\\TestTrans\\imgtoshow.tif");
 
-
-            using (Image<Gray, float> result = num.MatchTemplate(pattern, Emgu.CV.CvEnum.TemplateMatchingType.CcoeffNormed))
+            using (Image<Gray, float> result = imgToShow.MatchTemplate(pattern, Emgu.CV.CvEnum.TemplateMatchingType.CcoeffNormed))
             {
                 double[] minValues, maxValues;
                 
                 Point[] minLocations, maxLocations;
                 result.MinMax(out minValues, out maxValues, out minLocations, out maxLocations);
+                
 
-                if (maxValues[0] > 0.9)
+                if (maxValues[0] > 0.6)
                 {
-                    Rectangle match = new Rectangle(maxLocations[0],new Size(40,50));
+                    Rectangle match = new Rectangle(maxLocations[0],new Size(100,100));
+                    Rectangle match2;
                     imgToShow.Draw(match, new Gray(), 3);
-                    foreach (CaseACocher p in modele.casesACocher)
+                    foreach (CaseACocher cases in modele.casesACocher)
                     {
                         //lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y),p.nom));
                         //match = new Rectangle(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
-                        lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + (p.coord.X - Program.p.marqueur.X), maxLocations[0].Y + (p.coord.Y - Program.p.marqueur.Y)), p.nom));
-                        match = new Rectangle(new Point(maxLocations[0].X + (p.coord.X - Program.p.marqueur.X), maxLocations[0].Y + (p.coord.Y - Program.p.marqueur.Y)), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
-                        imgToShow.Draw(match, new Gray(), 3);
+                        lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y)), cases.nom));
+                        match = new Rectangle(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y)), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
+                        //match2 = new Rectangle(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y) - 50), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
+                        //imgToShow.Draw(match, new Gray(), 3);
+                        //imgToShow.Draw(match2, new Gray(), 3);
+                        
                     }
                     
                 }
