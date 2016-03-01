@@ -313,10 +313,11 @@ namespace Numerisation_GIST
                     str = str.Substring(0, str.Length - 2);
                     resultat = str + " n'ont pas de correspondance avec les images numérisées\n";
                 }
-
-                suppressionDossierTmp();
                 updateResultatTraitement(this, resultat);
+                RechercheCase();
+
                 updateInfoTraitement(this, "Traitement terminé.", "");
+                suppressionDossierTmp();
             }
             catch (Exception ex)
             {
@@ -326,6 +327,56 @@ namespace Numerisation_GIST
             finally
             {
                 updateButtonsTraitement(new object(), true);
+            }
+        }
+
+        public void RechercheCase()
+        {
+            Image<Gray, Byte> imageCase = imageModification.convertionBinaire(lesCorrespondances[lesPagesModeles[0]]);
+            Image<Gray, Byte> imageCaseModele = imageModification.convertionBinaire(lesPagesModeles[0].image);
+            Console.WriteLine("Recherche case coché");
+            Console.WriteLine("Créer liste");
+
+            List<Rectangle> lesCases = new List<Rectangle>();
+            List<Rectangle> lesCasesModele = new List<Rectangle>();
+            List<String> lesCaseNom = new List<string>();
+            List<String> lesCaseMotCle = new List<string>();
+            foreach (ZoneInfo uneCase in lesPagesModeles[0].casesACocher)
+            {
+                if (!lesCaseMotCle.Contains(uneCase.motcle))
+                {
+                    List<Rectangle> listCaseRect = tesseract.selectRectGauche(imageCase, uneCase.motcle, uneCase.hauteur, uneCase.offset);
+                    lesCases.AddRange(listCaseRect);
+                    lesCasesModele.AddRange(tesseract.selectRectGauche(imageCaseModele, uneCase.motcle, uneCase.hauteur, uneCase.offset));
+                    lesCaseMotCle.Add(uneCase.motcle);
+                }
+                lesCaseNom.Add(uneCase.nom);
+            }
+
+            List<Image<Gray, Byte>> imgCase = new List<Image<Gray, byte>>();
+            List<Image<Gray, Byte>> imgModeleCase = new List<Image<Gray, byte>>();
+
+            foreach (Rectangle r in lesCases)
+            {
+                Image<Gray, Byte> img = imageModification.rogner(imageCase, r);
+                imgCase.Add(img);
+            }
+            foreach (Rectangle r in lesCasesModele)
+            {
+                Image<Gray, Byte> img = imageModification.rogner(imageCaseModele, r);
+                imgModeleCase.Add(img);
+            }
+
+            Console.WriteLine("Vérif case");
+            MatModification matModification = new MatModification();
+            List<Boolean> resultCase = matModification.CaseCoche(imgModeleCase, imgCase);
+
+            for (int i = 0; i < resultCase.Count; i++)
+            {
+                if (resultCase[i])
+                {
+                    Console.WriteLine("Master coché : " + lesCaseNom[i]);
+                }
             }
         }
 
@@ -377,12 +428,12 @@ namespace Numerisation_GIST
                 {
                     updateInfoTraitement(this, "Initialisation : ", "Initialisation valeurs ...");
                     numerisationDPI = dpi;
-                    cheminModele = in_cheminModeles.Text;
-                    cheminImage = in_cheminImages.Text;
-                    cheminTmp = in_cheminTemp.Text;
+                    cheminModele = verifChemin(in_cheminModeles.Text);
+                    cheminImage = verifChemin(in_cheminImages.Text);
+                    cheminTmp = verifChemin(in_cheminTemp.Text);
                     tailleImg = new Size((int)in_tailleImgX.Value, (int)in_tailleImgY.Value);
                     updateInfoTraitement(this, "Initialisation : ", "Initialisation Tesseract ...");
-                    String tessdata = in_cheminTess.Text;
+                    String tessdata = verifChemin(in_cheminTess.Text);
                     tesseract = new TesseractTraitement(tessdata);
 
                     updateInfoTraitement(this, "Initialisation : ", "Configuration validée.");
@@ -445,9 +496,13 @@ namespace Numerisation_GIST
                 p.zoneInfos.Add(new ZoneInfo("2eme Voeu : Parcours", "Indiquer", 60, 145));
 
                 p.casesACocher = new List<ZoneInfo>();
-                p.casesACocher.Add(new ZoneInfo("Génie biotechnologie", "Parcours G", 60, 0));
-                p.casesACocher.Add(new ZoneInfo("Biochimie", "Parcours B", 60, 0));
-                p.casesACocher.Add(new ZoneInfo("Ingénierie & co", "Parcours I", 60, 0));
+                p.casesACocher.Add(new ZoneInfo("Génie biotechnologie", "Parcours G", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Biochimie", "Parcours B", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie du bâtiment : GIEEER", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie du bâtiment : TNCR", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie des contenus numérique en entreprise : IID", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie des contenus numérique en entreprise : IND", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie des contenus numérique en entreprise : ISI", "Parcours I", 30, 0));
 
                 p.rubriques = new List<ZoneInfo>();
                 p.rubriques.Add(new ZoneInfo("Informations étudiant", "Prénom", 220, 0));
@@ -530,7 +585,6 @@ namespace Numerisation_GIST
                 p8.rubriques.Add(new ZoneInfo("Signature", "Fait le", 200, 0));
 
                 JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m, false);
-                
             }
 
             return m;
@@ -661,6 +715,15 @@ namespace Numerisation_GIST
                 default:
                     break;
             }
+        }
+
+        private String verifChemin(string chemin)
+        {
+            if (!chemin[chemin.Length - 1].Equals('\\'))
+            {
+                chemin = chemin + "\\";
+            }
+            return chemin;
         }
     }
 }
