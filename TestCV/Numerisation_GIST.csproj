@@ -62,7 +62,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NTwain, Version=3.0.0.0, Culture=neutral, PublicKeyToken=f9f7e0c5169536c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\NTwain.3.3.9.1\lib\net40-client\NTwain.dll</HintPath>
+      <HintPath>..\packages\NTwain.3.3.9.2\lib\net40-client\NTwain.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -83,10 +83,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaseACocher.cs" />
+    <Compile Include="CustomMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomMessageBox.Designer.cs" />
     <Compile Include="JsonSerialization.cs" />
+    <Compile Include="MainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainWindow.designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Marqueurs.cs" />
     <Compile Include="Master.cs" />
     <Compile Include="Numerisation.cs" />
+    <Compile Include="SaveConfig.cs" />
     <Compile Include="TesseractTraitement.cs" />
     <Compile Include="MatModification.cs" />
     <Compile Include="ImageModification.cs" />
@@ -154,6 +165,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomMessageBox.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

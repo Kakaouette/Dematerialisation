@@ -1,29 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Numerisation_GIST
 {
+    //définition de zone où se trouve plusieurs chaîne de caractère
+    //La zone est un rectangle défini en pixel, le tableau contient plusieurs 
+    //chaîne de caractère qui devrait se trouver dans cette zone (en théorie, cela dépend du décalage par rapport au modèle lors de la numérisation)
     public class ZoneInfo
     {
-        public Rectangle coord { get; set; }
-        public string nom { get; set; }
+        public String nom;
+        public String motcle;
+        public int hauteur;
+        public int offset;
 
-        /*
-        public ZoneInfo(Rectangle r, string n)
+        public ZoneInfo()
         {
-            this.coord = r;
-            this.nom = n;
         }
-        */
 
-        public ZoneInfo(int x, int y, int width, int height, string n)
+        public ZoneInfo(String nom, String motcle, int hauteur, int offset)
         {
-            this.coord = new Rectangle(x,y,width,height);
-            this.nom = n;
+            this.nom = nom;
+            this.motcle = motcle;
+            this.hauteur = hauteur;
+            this.offset = offset;
+        }
+
+        override public string ToString()
+        {
+            return "ZoneInfo{nom=" + this.nom +
+                ", motcle=" + this.motcle +
+                ", hauteur=" + this.hauteur +
+                ", offset=" + this.offset + "}";
         }
     }
 }
+

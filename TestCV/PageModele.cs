@@ -17,7 +17,7 @@ namespace Numerisation_GIST
 
         public Rectangle marqueur { get; set; }
 
-        public List<CaseACocher> casesACocher { get; set; }
+        public List<ZoneInfo> casesACocher { get; set; }
         public List<ZoneInfo> zoneInfos { get; set; }
         public List<ZoneInfo> rubriques { get; set; }
 
@@ -73,14 +73,14 @@ namespace Numerisation_GIST
         public bool estPage(Image<Gray, byte> img)
         {
             //Passage en binaire
-            Image<Gray, byte> imgBin = Program.imageModification.convertionBinaire(img);
+            Image<Gray, byte> imgBin = MainWindow.imageModification.convertionBinaire(img);
             int i = 1;
             foreach (ZoneTexte z in this.lesZonesTextuelle)
             {
                 //découpe
-                Image<Gray, byte> imgR = Program.imageModification.rogner(imgBin, z.zone);
+                Image<Gray, byte> imgR = MainWindow.imageModification.rogner(imgBin, z.zone);
                 //tesseract
-                String texteTesseract = Program.tesseract.tesseractAnalyse(imgR);
+                String texteTesseract = MainWindow.tesseract.tesseractAnalyse(imgR);
                 //Si le texte reconnu par tesseract ne correspond pas à celui de la zone, return false
                 if (!textePresent(texteTesseract, z.mots))
                 {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Configuration;
 using Emgu.CV.Structure;
 using Emgu.CV;
+using System.Windows.Forms;
 
 namespace Numerisation_GIST
 {
@@ -135,7 +136,7 @@ namespace Numerisation_GIST
             }
             
             if (master.Equals("M2"))
-            {
+            {/*
                 p = m.lesPagesModeles[0];
                 p.marqueur = new Rectangle(222, 916, 65, 65);
                 p.casesACocher = new List<CaseACocher>();
@@ -154,6 +155,7 @@ namespace Numerisation_GIST
                 p.casesACocher.Add(new CaseACocher(new Point(128, 2155), "test"));
                 p.casesACocher.Add(new CaseACocher(new Point(128, 2230), "test"));
                 p.casesACocher.Add(new CaseACocher(new Point(128, 2306), "test"));
+                */
                 /* PageModele p2 = m.lesPagesModeles[1];
                  p2.marqueur = new Rectangle(135, 1835, 1845, 1905);
                  PageModele p3 = m.lesPagesModeles[2];
@@ -323,8 +325,11 @@ namespace Numerisation_GIST
             }
         }
 
+        [STAThread]
         static void Main(string[] args)
         {
+            Application.Run(new MainWindow());
+            /*
             try
             {
 
@@ -348,7 +353,7 @@ namespace Numerisation_GIST
 
                 Marqueurs marq = new Marqueurs();
                 M2.lesPagesModeles[0].image.Save("..\\..\\Include\\IMG\\huehue.tif");
-                string s = "Parcours de test Parcours qui fait des Parcours";
+                //string s = "Parcours de test Parcours qui fait des Parcours";
                 
                 //List<CaseACocher> lesCases = marq.patternFinding(lesImagesNum[7], M2.lesPagesModeles[0]);
                 //List<CaseACocher> lesCases = marq.patternFinding(p.image, M2.lesPagesModeles[0]);
@@ -461,6 +466,7 @@ namespace Numerisation_GIST
                 Console.ReadKey();
             }
             //suppressionDossierTmp();
+        */
         }
     }
 }

@@ -107,10 +107,10 @@ namespace Numerisation_GIST
                                 SetProperty(prop, 2);
                                 break;
                             case 6147: //ppp horizontal 
-                                SetProperty(prop, Program.numerisationDPI);
+                                SetProperty(prop, MainWindow.numerisationDPI);
                                 break;
                             case 6148: //ppp vertical 
-                                SetProperty(prop, Program.numerisationDPI);
+                                SetProperty(prop, MainWindow.numerisationDPI);
                                 break;
                             case 6149: //x point where to start scan 
                                 SetProperty(prop, 0);
@@ -319,7 +319,7 @@ namespace Numerisation_GIST
             }
 
             //Même chose avec le DPI
-            TWFix32 DPI = Program.numerisationDPI;
+            TWFix32 DPI = MainWindow.numerisationDPI;
 
             if(myDS.Capabilities.ICapXResolution.CanSet &&
                 myDS.Capabilities.ICapXResolution.GetValues().Contains(DPI))

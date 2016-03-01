@@ -57,7 +57,7 @@ namespace Numerisation_GIST
             Console.ReadKey();
 
         }*/
-
+        /*
         public List<CaseACocher> patternFinding(Image<Gray, Byte> num, PageModele modele)
         {
             List<CaseACocher> lesPoints = new List<CaseACocher>();
@@ -85,10 +85,10 @@ namespace Numerisation_GIST
                     foreach (CaseACocher cases in modele.casesACocher)
                     {
                         //lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y),p.nom));
-                        //match = new Rectangle(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
+                        //match = new Rectangle(new Point(maxLocations[0].X + p.coord.X, maxLocations[0].Y + p.coord.Y), new Size(MainWindow.tailleCheckBox, MainWindow.tailleCheckBox));
                         lesPoints.Add(new CaseACocher(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y)), cases.nom));
-                        match = new Rectangle(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y)), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
-                        //match2 = new Rectangle(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y) - 50), new Size(Program.tailleCheckBox, Program.tailleCheckBox));
+                        match = new Rectangle(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y)), new Size(MainWindow.tailleCheckBox, MainWindow.tailleCheckBox));
+                        //match2 = new Rectangle(new Point(maxLocations[0].X + (cases.coord.X - modele.marqueur.X), maxLocations[0].Y + (cases.coord.Y - modele.marqueur.Y) - 50), new Size(MainWindow.tailleCheckBox, MainWindow.tailleCheckBox));
                         //imgToShow.Draw(match, new Gray(), 3);
                         //imgToShow.Draw(match2, new Gray(), 3);
                         
@@ -101,6 +101,7 @@ namespace Numerisation_GIST
             //modele.image.Save("..\\..\\Include\\IMG\\TestTrans\\testTrouveModele.tif");
             return lesPoints;
         }
+        */
     }
 
         

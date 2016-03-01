@@ -26,14 +26,14 @@ namespace Numerisation_GIST
             foreach (Image<Gray, Byte> img in lesImagesNum)
             {
                 //binaire
-                Image<Gray, byte> imgBin = Program.imageModification.convertionBinaire(img);
+                Image<Gray, byte> imgBin = MainWindow.imageModification.convertionBinaire(img);
                 //découpe
-                Image<Gray, byte> imgR = Program.imageModification.rogner(imgBin, laZoneTextuelle.zone);
+                Image<Gray, byte> imgR = MainWindow.imageModification.rogner(imgBin, laZoneTextuelle.zone);
                 //tesseract
-                String texte = Program.tesseract.tesseractAnalyse(imgR);
+                String texte = MainWindow.tesseract.tesseractAnalyse(imgR);
 
-                img.Save(Program.cheminTmp + i + ".tif");
-                imgR.Save(Program.cheminTmp + i + "Crop.tif");
+                img.Save(MainWindow.cheminTmp + i + ".tif");
+                imgR.Save(MainWindow.cheminTmp + i + "Crop.tif");
                 i++;
                 foreach(String cmp in laZoneTextuelle.mots)
                 {
