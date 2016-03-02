@@ -32,10 +32,12 @@ namespace Numerisation_GIST
             tesseract.Recognize(imgcoucou);
             Emgu.CV.OCR.Tesseract.Character[] coucou = tesseract.GetCharacters();
             String stringcoucou = "";
+            
             foreach (Emgu.CV.OCR.Tesseract.Character c in coucou)
             {
                 stringcoucou += c.Text;
             }
+            //stringcoucou = tesseract.GetText();
             stringcoucou = stringcoucou.ToLower();
             mot = mot.ToLower();
             int depassement = 0;
@@ -51,29 +53,32 @@ namespace Numerisation_GIST
             return lesRect;
         }
 
-        public List<Rectangle> selectRectAll(Image<Gray, Byte> imgcoucou, String mot, int taille, int offset)
+        public Rectangle selectRectAllFirst(Image<Gray, Byte> imgcoucou, String mot, int taille, int offset)
         {
-            List<Rectangle> lesRect = new List<Rectangle>();
             tesseract.Recognize(imgcoucou);
             Emgu.CV.OCR.Tesseract.Character[] coucou = tesseract.GetCharacters();
             String stringcoucou = "";
+            
             foreach (Emgu.CV.OCR.Tesseract.Character c in coucou)
             {
                 stringcoucou += c.Text;
             }
+            //stringcoucou = tesseract.GetText();
             stringcoucou = stringcoucou.ToLower();
             mot = mot.ToLower();
-            int depassement = 0;
-
-            while (stringcoucou.ToString().IndexOf(mot) != -1)
+            int s = stringcoucou.ToString().IndexOf(mot);
+            if (s != -1)
             {
-                int s = stringcoucou.ToString().IndexOf(mot);
-                stringcoucou = stringcoucou.Substring(s + 1);
-                Rectangle r = new Rectangle(0, coucou[depassement + s].Region.Y + offset, imgcoucou.Width, taille);
-                lesRect.Add(r);
-                depassement = depassement + s + 1;
+                return new Rectangle(0, coucou[s].Region.Y + offset, imgcoucou.Width, taille);
             }
-            return lesRect;
+            else
+            {
+                Console.WriteLine("mot : " + mot + " introuvable");
+                Console.WriteLine("-------------------------------------------------------------");
+                Console.WriteLine(stringcoucou);
+                Console.WriteLine("-------------------------------------------------------------");
+                return new Rectangle(0, 0, imgcoucou.Width, taille);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace Numerisation_GIST
 {
     public class Program
-    {
+    {/*
         public static PageModele p;
         public static PageModele p2;
         public static String cheminModele { get; private set; }
@@ -196,7 +196,7 @@ namespace Numerisation_GIST
                  p7.rubriques.Add(new ZoneInfo(104, 351, 1789, 1967, "Fiche confidentielle d'appréciation"));
 
                  PageModele p8 = m.lesPagesModeles[7];
-                 p8.marqueur = new Rectangle(135, 1620, 1845, 1695);*/
+                 p8.marqueur = new Rectangle(135, 1620, 1845, 1695);
 
                 JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m, false);
                 
@@ -324,7 +324,7 @@ namespace Numerisation_GIST
                 i++;
             }
         }
-
+        */
         [STAThread]
         static void Main(string[] args)
         {

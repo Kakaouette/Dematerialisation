@@ -95,7 +95,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(377, 257);
+            this.groupBox1.Size = new System.Drawing.Size(579, 457);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Initialisation";
@@ -119,7 +119,7 @@
             "Windows Image Acquisition"});
             this.in_numeriserOption.Location = new System.Drawing.Point(167, 19);
             this.in_numeriserOption.Name = "in_numeriserOption";
-            this.in_numeriserOption.Size = new System.Drawing.Size(173, 21);
+            this.in_numeriserOption.Size = new System.Drawing.Size(386, 21);
             this.in_numeriserOption.TabIndex = 27;
             // 
             // in_DPI
@@ -133,13 +133,13 @@
             "1200"});
             this.in_DPI.Location = new System.Drawing.Point(167, 46);
             this.in_DPI.Name = "in_DPI";
-            this.in_DPI.Size = new System.Drawing.Size(173, 21);
+            this.in_DPI.Size = new System.Drawing.Size(386, 21);
             this.in_DPI.TabIndex = 26;
             // 
             // btn_sauvegarder
             // 
             this.btn_sauvegarder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_sauvegarder.Location = new System.Drawing.Point(167, 228);
+            this.btn_sauvegarder.Location = new System.Drawing.Point(167, 428);
             this.btn_sauvegarder.Name = "btn_sauvegarder";
             this.btn_sauvegarder.Size = new System.Drawing.Size(86, 23);
             this.btn_sauvegarder.TabIndex = 22;
@@ -150,7 +150,7 @@
             // btn_initValider
             // 
             this.btn_initValider.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_initValider.Location = new System.Drawing.Point(296, 228);
+            this.btn_initValider.Location = new System.Drawing.Point(296, 428);
             this.btn_initValider.Name = "btn_initValider";
             this.btn_initValider.Size = new System.Drawing.Size(75, 23);
             this.btn_initValider.TabIndex = 1;
@@ -160,7 +160,7 @@
             // 
             // label9
             // 
-            this.label9.Location = new System.Drawing.Point(346, 151);
+            this.label9.Location = new System.Drawing.Point(346, 177);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(25, 20);
             this.label9.TabIndex = 21;
@@ -170,7 +170,7 @@
             // lbl_initError
             // 
             this.lbl_initError.ForeColor = System.Drawing.Color.Red;
-            this.lbl_initError.Location = new System.Drawing.Point(6, 200);
+            this.lbl_initError.Location = new System.Drawing.Point(6, 258);
             this.lbl_initError.Name = "lbl_initError";
             this.lbl_initError.Size = new System.Drawing.Size(365, 23);
             this.lbl_initError.TabIndex = 19;
@@ -178,7 +178,7 @@
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(245, 151);
+            this.label7.Location = new System.Drawing.Point(245, 177);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(17, 20);
             this.label7.TabIndex = 18;
@@ -187,7 +187,7 @@
             // 
             // in_tailleImgX
             // 
-            this.in_tailleImgX.Location = new System.Drawing.Point(167, 151);
+            this.in_tailleImgX.Location = new System.Drawing.Point(167, 177);
             this.in_tailleImgX.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -199,7 +199,7 @@
             // 
             // in_tailleImgY
             // 
-            this.in_tailleImgY.Location = new System.Drawing.Point(268, 151);
+            this.in_tailleImgY.Location = new System.Drawing.Point(268, 177);
             this.in_tailleImgY.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -211,7 +211,7 @@
             // 
             // btn_cheminTess
             // 
-            this.btn_cheminTess.Location = new System.Drawing.Point(346, 176);
+            this.btn_cheminTess.Location = new System.Drawing.Point(528, 150);
             this.btn_cheminTess.Name = "btn_cheminTess";
             this.btn_cheminTess.Size = new System.Drawing.Size(25, 20);
             this.btn_cheminTess.TabIndex = 15;
@@ -221,7 +221,7 @@
             // 
             // btn_cheminTemp
             // 
-            this.btn_cheminTemp.Location = new System.Drawing.Point(346, 125);
+            this.btn_cheminTemp.Location = new System.Drawing.Point(528, 124);
             this.btn_cheminTemp.Name = "btn_cheminTemp";
             this.btn_cheminTemp.Size = new System.Drawing.Size(25, 20);
             this.btn_cheminTemp.TabIndex = 14;
@@ -231,7 +231,7 @@
             // 
             // btn_cheminImages
             // 
-            this.btn_cheminImages.Location = new System.Drawing.Point(346, 98);
+            this.btn_cheminImages.Location = new System.Drawing.Point(528, 98);
             this.btn_cheminImages.Name = "btn_cheminImages";
             this.btn_cheminImages.Size = new System.Drawing.Size(25, 20);
             this.btn_cheminImages.TabIndex = 13;
@@ -241,7 +241,7 @@
             // 
             // btn_cheminModeles
             // 
-            this.btn_cheminModeles.Location = new System.Drawing.Point(346, 72);
+            this.btn_cheminModeles.Location = new System.Drawing.Point(528, 72);
             this.btn_cheminModeles.Name = "btn_cheminModeles";
             this.btn_cheminModeles.Size = new System.Drawing.Size(25, 20);
             this.btn_cheminModeles.TabIndex = 12;
@@ -251,14 +251,14 @@
             // 
             // in_cheminTess
             // 
-            this.in_cheminTess.Location = new System.Drawing.Point(167, 177);
+            this.in_cheminTess.Location = new System.Drawing.Point(167, 151);
             this.in_cheminTess.Name = "in_cheminTess";
-            this.in_cheminTess.Size = new System.Drawing.Size(173, 20);
+            this.in_cheminTess.Size = new System.Drawing.Size(355, 20);
             this.in_cheminTess.TabIndex = 11;
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(6, 177);
+            this.label6.Location = new System.Drawing.Point(6, 151);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(155, 20);
             this.label6.TabIndex = 10;
@@ -267,7 +267,7 @@
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(6, 151);
+            this.label5.Location = new System.Drawing.Point(6, 177);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(155, 20);
             this.label5.TabIndex = 8;
@@ -278,7 +278,7 @@
             // 
             this.in_cheminTemp.Location = new System.Drawing.Point(167, 125);
             this.in_cheminTemp.Name = "in_cheminTemp";
-            this.in_cheminTemp.Size = new System.Drawing.Size(173, 20);
+            this.in_cheminTemp.Size = new System.Drawing.Size(355, 20);
             this.in_cheminTemp.TabIndex = 7;
             // 
             // label4
@@ -294,7 +294,7 @@
             // 
             this.in_cheminImages.Location = new System.Drawing.Point(167, 99);
             this.in_cheminImages.Name = "in_cheminImages";
-            this.in_cheminImages.Size = new System.Drawing.Size(173, 20);
+            this.in_cheminImages.Size = new System.Drawing.Size(355, 20);
             this.in_cheminImages.TabIndex = 5;
             // 
             // label3
@@ -310,7 +310,7 @@
             // 
             this.in_cheminModeles.Location = new System.Drawing.Point(167, 73);
             this.in_cheminModeles.Name = "in_cheminModeles";
-            this.in_cheminModeles.Size = new System.Drawing.Size(173, 20);
+            this.in_cheminModeles.Size = new System.Drawing.Size(355, 20);
             this.in_cheminModeles.TabIndex = 3;
             // 
             // label2
@@ -336,9 +336,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStrip_Category,
             this.toolStrip_Info});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 276);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 472);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(788, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1233, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -356,16 +356,16 @@
             // 
             // txb_resultat
             // 
-            this.txb_resultat.Location = new System.Drawing.Point(395, 32);
+            this.txb_resultat.Location = new System.Drawing.Point(597, 31);
             this.txb_resultat.Multiline = true;
             this.txb_resultat.Name = "txb_resultat";
             this.txb_resultat.ReadOnly = true;
-            this.txb_resultat.Size = new System.Drawing.Size(381, 72);
+            this.txb_resultat.Size = new System.Drawing.Size(624, 216);
             this.txb_resultat.TabIndex = 2;
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(395, 9);
+            this.label8.Location = new System.Drawing.Point(597, 8);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(155, 20);
             this.label8.TabIndex = 22;
@@ -374,7 +374,7 @@
             // 
             // btn_execute
             // 
-            this.btn_execute.Location = new System.Drawing.Point(701, 246);
+            this.btn_execute.Location = new System.Drawing.Point(1146, 440);
             this.btn_execute.Name = "btn_execute";
             this.btn_execute.Size = new System.Drawing.Size(75, 23);
             this.btn_execute.TabIndex = 23;
@@ -385,7 +385,7 @@
             // btn_initialiser
             // 
             this.btn_initialiser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_initialiser.Location = new System.Drawing.Point(620, 246);
+            this.btn_initialiser.Location = new System.Drawing.Point(840, 440);
             this.btn_initialiser.Name = "btn_initialiser";
             this.btn_initialiser.Size = new System.Drawing.Size(75, 23);
             this.btn_initialiser.TabIndex = 23;
@@ -395,16 +395,16 @@
             // 
             // tree_result
             // 
-            this.tree_result.Location = new System.Drawing.Point(395, 111);
+            this.tree_result.Location = new System.Drawing.Point(597, 253);
             this.tree_result.Name = "tree_result";
-            this.tree_result.Size = new System.Drawing.Size(381, 129);
+            this.tree_result.Size = new System.Drawing.Size(624, 181);
             this.tree_result.TabIndex = 24;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(788, 298);
+            this.ClientSize = new System.Drawing.Size(1233, 494);
             this.Controls.Add(this.tree_result);
             this.Controls.Add(this.btn_execute);
             this.Controls.Add(this.label8);

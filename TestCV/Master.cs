@@ -1,6 +1,5 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +8,9 @@ using System.Threading.Tasks;
 
 namespace Numerisation_GIST
 {
-    class Master
+    public class Master
     {
-        [JsonRequired]
         public ZoneTexte laZoneTextuelle;
-
-        [JsonRequired]
         public List<PageModele> lesPagesModeles;
 
         public Master()

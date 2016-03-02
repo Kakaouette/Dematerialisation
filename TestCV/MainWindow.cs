@@ -3,6 +3,7 @@ using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -315,6 +316,8 @@ namespace Numerisation_GIST
                 }
                 updateResultatTraitement(this, resultat);
                 RechercheCase();
+                RechercheSectionVide();
+                decoupeRubrique();
 
                 updateInfoTraitement(this, "Traitement terminé.", "");
                 suppressionDossierTmp();
@@ -332,10 +335,9 @@ namespace Numerisation_GIST
 
         public void RechercheCase()
         {
+            Console.WriteLine("Recherche de case coché");
             Image<Gray, Byte> imageCase = imageModification.convertionBinaire(lesCorrespondances[lesPagesModeles[0]]);
             Image<Gray, Byte> imageCaseModele = imageModification.convertionBinaire(lesPagesModeles[0].image);
-            Console.WriteLine("Recherche case coché");
-            Console.WriteLine("Créer liste");
 
             List<Rectangle> lesCases = new List<Rectangle>();
             List<Rectangle> lesCasesModele = new List<Rectangle>();
@@ -356,18 +358,24 @@ namespace Numerisation_GIST
             List<Image<Gray, Byte>> imgCase = new List<Image<Gray, byte>>();
             List<Image<Gray, Byte>> imgModeleCase = new List<Image<Gray, byte>>();
 
+            //int j = 1;
             foreach (Rectangle r in lesCases)
             {
                 Image<Gray, Byte> img = imageModification.rogner(imageCase, r);
                 imgCase.Add(img);
+                //img.Save(cheminTmp + j + ".tif");
+                //j++;
             }
+
+            //j = 1;
             foreach (Rectangle r in lesCasesModele)
             {
                 Image<Gray, Byte> img = imageModification.rogner(imageCaseModele, r);
                 imgModeleCase.Add(img);
+                //img.Save(cheminTmp + j + "M.tif");
+                //j++;
             }
 
-            Console.WriteLine("Vérif case");
             MatModification matModification = new MatModification();
             List<Boolean> resultCase = matModification.CaseCoche(imgModeleCase, imgCase);
 
@@ -377,6 +385,78 @@ namespace Numerisation_GIST
                 {
                     Console.WriteLine("Master coché : " + lesCaseNom[i]);
                 }
+            }
+        }
+
+        public void RechercheSectionVide()
+        {
+            Console.WriteLine("Recherche de section vide");
+            double ratioZoneDeTexte = double.Parse(ConfigurationManager.AppSettings["ratioZoneDeTexte"]);
+            MatModification matModification = new MatModification();
+            int modifTaille = 20;
+            foreach (PageModele modele in lesCorrespondances.Keys)
+            {
+                Console.WriteLine("Page " + modele.numero);
+                Image<Gray, Byte> image = imageModification.convertionBinaire(lesCorrespondances[modele]);
+                Image<Gray, Byte> imageModele = imageModification.convertionBinaire(modele.image);
+                int i = 1;
+                foreach (ZoneInfo sectionInfo in modele.zoneInfos)
+                {
+                    Rectangle sectionRect = tesseract.selectRectAllFirst(image, sectionInfo.motcle, sectionInfo.hauteur + modifTaille, sectionInfo.offset - modifTaille);
+                    Rectangle sectionModeleRect = tesseract.selectRectAllFirst(imageModele, sectionInfo.motcle, sectionInfo.hauteur + modifTaille, sectionInfo.offset - modifTaille);
+
+                    //Console.WriteLine(sectionInfo.nom + " => " + sectionRect + " - " + sectionModeleRect);
+
+                    Image<Gray, Byte> imgSection = imageModification.rogner(image, sectionRect);
+                    Image<Gray, Byte> imgSectionModele = imageModification.rogner(imageModele, sectionModeleRect);
+                    //imgSection.Save(cheminTmp + modele.numero + i + ".tif");
+                    //imgSectionModele.Save(cheminTmp + modele.numero + i + "M.tif");
+                    i++;
+
+                    double ratio = matModification.RatioPixelsNoir(imgSection, imgSectionModele);
+                    //Console.WriteLine(ratio);
+
+                    //Console.Write(sectionInfo.nom + " ");
+                    if (ratio < ratioZoneDeTexte)
+                    {
+                        //Console.WriteLine("ok");
+                    }
+                    else
+                    {
+                        Console.Write(sectionInfo.nom + " ");
+                        Console.WriteLine("ko");
+                    }
+                }
+            }
+        }
+
+        public void decoupeRubrique()
+        {
+            Console.WriteLine("Découpage de rubrique");
+            MatModification matModification = new MatModification();
+            int modifTaille = 20;
+            List<Image<Gray, Byte>> corresCopy = new List<Image<Gray, byte>>();
+            corresCopy.AddRange(lesImagesNum);
+            foreach (PageModele modele in lesCorrespondances.Keys)
+            {
+                Console.WriteLine("Page " + modele.numero);
+                Image<Gray, Byte> image = imageModification.convertionBinaire(lesCorrespondances[modele]);
+
+                int i = 1;
+                foreach (ZoneInfo rubriqueInfo in modele.rubriques)
+                {
+                    Rectangle rubriqueRect = tesseract.selectRectAllFirst(image, rubriqueInfo.motcle, rubriqueInfo.hauteur + modifTaille, rubriqueInfo.offset - modifTaille);
+                    Image<Gray, Byte> imgRubrique = imageModification.rogner(lesCorrespondances[modele], rubriqueRect);
+                    imgRubrique.Save(cheminTmp + modele.numero + i + "-" + rubriqueInfo.nom + ".tif");
+                    i++;
+                }
+                corresCopy.Remove(lesCorrespondances[modele]);
+            }
+            int j = 1;
+            foreach(Image<Gray, Byte> annexe in corresCopy)
+            {
+                annexe.Save(cheminTmp + "annexe-" + j + ".tif");
+                j++;
             }
         }
 
@@ -459,20 +539,16 @@ namespace Numerisation_GIST
         {
             Master m = null;
 
-            updateInfoTraitement(this, "Initialisation - Image Modele \"" + master + "\" : ", "Lecture JSON ...");
+            updateInfoTraitement(this, "Initialisation - Image Modele \"" + master + "\" : ", "Lecture XML ...");
             try
             {
-                m = JsonSerialization.ReadFromJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json");
+                m = XmlSerialization.ReadFromXmlFile<Master>(cheminModele + "config-Modèle-" + master + ".xml");
             }
             catch (Exception ex)
             {
                 if (ex is FileNotFoundException)
                 {
-                    throw new FileNotFoundException("Erreur le fichier " + cheminModele + "config-Modèle-M1.json" + " n'existe pas !", ex);
-                }
-                else if (ex is Newtonsoft.Json.JsonSerializationException)
-                {
-                    throw new Newtonsoft.Json.JsonSerializationException("Erreur lors de la lecture du fichier JSON", ex);
+                    throw new FileNotFoundException("Erreur le fichier " + cheminModele + "config-Modèle-M1.xml" + " n'existe pas !", ex);
                 }
                 else
                 {
@@ -483,7 +559,8 @@ namespace Numerisation_GIST
             foreach (PageModele page in m.lesPagesModeles)
             {
                 page.chargerImage();
-                updateInfoTraitement(this, "Initialisation - Image Modele \"" + master + "\" : ", JsonSerialization.toJSON<PageModele>(page) + " ...");
+                page.image = imageModification.redimensionner(page.image, tailleImg.Width, tailleImg.Height);
+                updateInfoTraitement(this, "Initialisation - Image Modele \"" + master + "\" : ", "...");
             }
 
             if (master.Equals("M1"))
@@ -511,8 +588,8 @@ namespace Numerisation_GIST
 
                 PageModele p2 = m.lesPagesModeles[1];
                 p2.zoneInfos = new List<ZoneInfo>();
-                p2.zoneInfos.Add(new ZoneInfo("Nom", "inutile", 130, 0));
-                p2.zoneInfos.Add(new ZoneInfo("Prénom", "Prénom", 60, 0));
+                //p2.zoneInfos.Add(new ZoneInfo("Nom", "inutile", 130, 0));
+                //p2.zoneInfos.Add(new ZoneInfo("Prénom", "Prénom", 60, 0));
                 p2.zoneInfos.Add(new ZoneInfo("Numéro INE", "Marital", 60, 70));
                 p2.zoneInfos.Add(new ZoneInfo("Nationalité", "Nationalité", 60, 0));
                 p2.zoneInfos.Add(new ZoneInfo("Date et lieu de naissance", "naissance", 60, 0));
@@ -545,14 +622,14 @@ namespace Numerisation_GIST
 
                 p4.rubriques = new List<ZoneInfo>();
                 p4.rubriques.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
-                p4.rubriques.Add(new ZoneInfo("Emplois / Stages", "Dernière", 1950, -90));
+                p4.rubriques.Add(new ZoneInfo("Emplois et Stages", "Dernière", 1950, -90));
 
                 PageModele p5 = m.lesPagesModeles[4];
                 p5.zoneInfos = new List<ZoneInfo>();
                 p5.zoneInfos.Add(new ZoneInfo("Exposé des motivations", "motivation", 1350, 0));
                 p5.zoneInfos.Add(new ZoneInfo("Soussigné", "soussigné", 60, 0));
                 p5.zoneInfos.Add(new ZoneInfo("Fait à...", "Fait", 60, 0));
-                p5.zoneInfos.Add(new ZoneInfo("Signature", "Signature", 550, 0));
+                p5.zoneInfos.Add(new ZoneInfo("Signature", "Fait", 550, 50));
 
                 p5.casesACocher = new List<ZoneInfo>();
 
@@ -565,28 +642,23 @@ namespace Numerisation_GIST
                 p6.casesACocher = new List<ZoneInfo>();
                 p6.rubriques = new List<ZoneInfo>();
 
-                PageModele p7 = m.lesPagesModeles[6];
-                p7.zoneInfos = new List<ZoneInfo>();
-                p7.zoneInfos.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
-
-                p7.casesACocher = new List<ZoneInfo>();
-
-                p7.rubriques = new List<ZoneInfo>();
-                p7.rubriques.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
-                p7.rubriques.Add(new ZoneInfo("Emplois / Stages", "Dernière", 1950, -90));
-
                 PageModele p8 = m.lesPagesModeles[7];
                 p8.zoneInfos = new List<ZoneInfo>();
                 p8.casesACocher = new List<ZoneInfo>();
                 p8.rubriques = new List<ZoneInfo>();
-                p8.rubriques.Add(new ZoneInfo("Rappel infos étudiant", "Mention", 620, 0));
-                p8.rubriques.Add(new ZoneInfo("Personne recommandant", "recommandant", 270, 0));
-                p8.rubriques.Add(new ZoneInfo("Appréciation", "DISCIPLINE", 600, 0));
-                p8.rubriques.Add(new ZoneInfo("Signature", "Fait le", 200, 0));
 
-                JsonSerialization.WriteToJsonFile<Master>(cheminModele + "config-Modèle-" + master + ".json", m, false);
+                PageModele p7 = m.lesPagesModeles[6];
+                p7.zoneInfos = new List<ZoneInfo>();
+                p7.rubriques.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
+                p7.casesACocher = new List<ZoneInfo>();
+                p7.rubriques = new List<ZoneInfo>();
+                p7.rubriques.Add(new ZoneInfo("Rappel infos étudiant", "Mention", 620, 0));
+                p7.rubriques.Add(new ZoneInfo("Personne recommandant", "recommandant", 270, 0));
+                p7.rubriques.Add(new ZoneInfo("Appréciation", "DISCIPLINE", 600, 0));
+                p7.rubriques.Add(new ZoneInfo("Signature", "Fait le", 200, 0));
+
+                XmlSerialization.WriteToXmlFile<Master>(cheminModele + "config-Modèle-" + master + ".xml", m, false);
             }
-
             return m;
         }
 

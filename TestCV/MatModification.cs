@@ -135,7 +135,7 @@ namespace Numerisation_GIST
             {
                 double ratio = RatioPixelsNoir(lesCases[i], lesCasesModele[i]);
 
-                //Console.WriteLine("case " + i + " : " + ratio);
+                Console.WriteLine("case " + i + " : " + ratio);
                 resultat.Add(ratio < double.Parse(ConfigurationManager.AppSettings["ratioCaseACocher"]));
             }
 

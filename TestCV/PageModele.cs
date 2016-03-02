@@ -1,6 +1,5 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,22 +11,14 @@ namespace Numerisation_GIST
     //Contient toutes les méthodes permettant de vérifié qu'une image (Objet Mat) appartient au pattern
     public class PageModele
     {
-        [JsonRequired]
         public int numero { get; set; }
-
-        public Rectangle marqueur { get; set; }
-
         public List<ZoneInfo> casesACocher { get; set; }
         public List<ZoneInfo> zoneInfos { get; set; }
         public List<ZoneInfo> rubriques { get; set; }
-
-        [JsonRequired]
         public List<ZoneTexte> lesZonesTextuelle { get; set; }
-
-        [JsonRequired]
         public string cheminImage { get; set; }
 
-        [JsonIgnore]
+        [XmlIgnore]
         public Image<Gray, byte> image { get;  set; }
 
         public PageModele()
