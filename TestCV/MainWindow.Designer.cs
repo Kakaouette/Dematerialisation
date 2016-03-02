@@ -61,10 +61,14 @@
             this.btn_execute = new System.Windows.Forms.Button();
             this.btn_initialiser = new System.Windows.Forms.Button();
             this.tree_result = new System.Windows.Forms.TreeView();
+            this.pb_image = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.in_tailleImgX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.in_tailleImgY)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_image)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -95,7 +99,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(579, 457);
+            this.groupBox1.Size = new System.Drawing.Size(565, 235);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Initialisation";
@@ -139,7 +143,7 @@
             // btn_sauvegarder
             // 
             this.btn_sauvegarder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_sauvegarder.Location = new System.Drawing.Point(167, 428);
+            this.btn_sauvegarder.Location = new System.Drawing.Point(167, 206);
             this.btn_sauvegarder.Name = "btn_sauvegarder";
             this.btn_sauvegarder.Size = new System.Drawing.Size(86, 23);
             this.btn_sauvegarder.TabIndex = 22;
@@ -150,7 +154,7 @@
             // btn_initValider
             // 
             this.btn_initValider.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_initValider.Location = new System.Drawing.Point(296, 428);
+            this.btn_initValider.Location = new System.Drawing.Point(296, 206);
             this.btn_initValider.Name = "btn_initValider";
             this.btn_initValider.Size = new System.Drawing.Size(75, 23);
             this.btn_initValider.TabIndex = 1;
@@ -336,7 +340,7 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStrip_Category,
             this.toolStrip_Info});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 472);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 573);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1233, 22);
             this.statusStrip1.TabIndex = 1;
@@ -360,6 +364,7 @@
             this.txb_resultat.Multiline = true;
             this.txb_resultat.Name = "txb_resultat";
             this.txb_resultat.ReadOnly = true;
+            this.txb_resultat.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txb_resultat.Size = new System.Drawing.Size(624, 216);
             this.txb_resultat.TabIndex = 2;
             // 
@@ -374,7 +379,8 @@
             // 
             // btn_execute
             // 
-            this.btn_execute.Location = new System.Drawing.Point(1146, 440);
+            this.btn_execute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_execute.Location = new System.Drawing.Point(1146, 541);
             this.btn_execute.Name = "btn_execute";
             this.btn_execute.Size = new System.Drawing.Size(75, 23);
             this.btn_execute.TabIndex = 23;
@@ -385,7 +391,7 @@
             // btn_initialiser
             // 
             this.btn_initialiser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_initialiser.Location = new System.Drawing.Point(840, 440);
+            this.btn_initialiser.Location = new System.Drawing.Point(840, 541);
             this.btn_initialiser.Name = "btn_initialiser";
             this.btn_initialiser.Size = new System.Drawing.Size(75, 23);
             this.btn_initialiser.TabIndex = 23;
@@ -395,16 +401,40 @@
             // 
             // tree_result
             // 
-            this.tree_result.Location = new System.Drawing.Point(597, 253);
+            this.tree_result.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.tree_result.Location = new System.Drawing.Point(12, 253);
             this.tree_result.Name = "tree_result";
-            this.tree_result.Size = new System.Drawing.Size(624, 181);
+            this.tree_result.Size = new System.Drawing.Size(262, 311);
             this.tree_result.TabIndex = 24;
+            this.tree_result.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tree_result_AfterSelect);
+            // 
+            // pb_image
+            // 
+            this.pb_image.Location = new System.Drawing.Point(3, 3);
+            this.pb_image.Name = "pb_image";
+            this.pb_image.Size = new System.Drawing.Size(935, 276);
+            this.pb_image.TabIndex = 25;
+            this.pb_image.TabStop = false;
+            // 
+            // panel1
+            // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.pb_image);
+            this.panel1.Location = new System.Drawing.Point(280, 253);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(941, 282);
+            this.panel1.TabIndex = 26;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1233, 494);
+            this.ClientSize = new System.Drawing.Size(1233, 595);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.tree_result);
             this.Controls.Add(this.btn_execute);
             this.Controls.Add(this.label8);
@@ -419,6 +449,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.in_tailleImgY)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_image)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -459,5 +491,7 @@
         private System.Windows.Forms.ComboBox in_DPI;
         private System.Windows.Forms.CheckBox in_numeriser;
         private System.Windows.Forms.TreeView tree_result;
+        private System.Windows.Forms.PictureBox pb_image;
+        private System.Windows.Forms.Panel panel1;
     }
 }

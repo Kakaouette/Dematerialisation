@@ -35,10 +35,12 @@ namespace Numerisation_GIST
         private static List<PageModele> lesPagesModeles;
 
         private static bool init = false;
+        private static String master;
 
 
         //Dictionnaire contenant pour chaque pattern, la page numérisé
         Dictionary<PageModele, Image<Gray, byte>> lesCorrespondances;
+        private static Image<Gray, byte>[] lesImagesOrder;
 
         public MainWindow()
         {
@@ -124,40 +126,54 @@ namespace Numerisation_GIST
         #endregion
         
         #region Update buttons
-        public delegate void updateTreeDelegate(String treeString);
+        public delegate void updateTreeDelegate();
 
-        public void updateTree(String treeString)
+        public void updateTree()
         {
-            //
-            // This is the first node in the view.
-            //
-            TreeNode treeNode = new TreeNode("Windows");
-            tree_result.Nodes.Add(treeNode);
-            //
-            // Another node following the first node.
-            //
-            treeNode = new TreeNode("Linux");
-            tree_result.Nodes.Add(treeNode);
-            //
-            // Create two child nodes and put them in an array.
-            // ... Add the third node, and specify these as its children.
-            //
-            TreeNode node2 = new TreeNode("C#");
-            TreeNode node3 = new TreeNode("VB.NET");
-            TreeNode[] array = new TreeNode[] { node2, node3 };
-            //
-            // Final node.
-            //
-            treeNode = new TreeNode("Dot Net Perls", array);
-            tree_result.Nodes.Add(treeNode);
+            List<Image<Gray, byte>> lesAnnexes = new List<Image<Gray, byte>>();
+            lesAnnexes.AddRange(lesImagesNum);
 
-            // tNode = treeView1.Nodes.Add("Websites") ;
-            // treeView1.Nodes[0].Nodes.Add("Net-informations.com");
+            TreeNode[] pages = new TreeNode[lesImagesNum.Count];
+            lesImagesOrder = new Image<Gray, byte>[lesImagesNum.Count];
+            int idxPages = 0;
+
+            foreach(PageModele modele in lesCorrespondances.Keys)
+            {
+                TreeNode[] children = new TreeNode[modele.rubriques.Count];
+                int idxChildren = 0;
+
+                foreach(ZoneInfo rubrique in modele.rubriques)
+                {
+                    children[idxChildren] = new TreeNode(rubrique.nom);
+                    idxChildren++;
+                }
+
+                pages[idxPages] = new TreeNode("Page " + modele.numero, children);
+                lesImagesOrder[idxPages] = lesCorrespondances[modele];
+
+                idxPages++;
+
+                lesAnnexes.Remove(lesCorrespondances[modele]);
+            }
+            foreach (Image<Gray, byte> annexe in lesAnnexes)
+            {
+                pages[idxPages] = new TreeNode("Annexe " + (idxPages + 1 - lesCorrespondances.Count));
+                lesImagesOrder[idxPages] = annexe;
+                idxPages++;
+            }
+            if (master.Equals("M1"))
+            {
+                tree_result.Nodes.Add(new TreeNode("Dossier M1", pages));
+            }
+            else if (master.Equals("M2"))
+            {
+                tree_result.Nodes.Add(new TreeNode("Dossier M2", pages));
+            }
         }
 
-        private void updateTreeDelegateTraitement(object sender, String treeString)
+        private void updateTreeDelegateTraitement(object sender)
         {
-            this.Invoke(new updateTreeDelegate(this.updateTree), new object[] { treeString });
+            this.Invoke(new updateTreeDelegate(this.updateTree), new object[] { });
         }
         #endregion
 
@@ -232,14 +248,17 @@ namespace Numerisation_GIST
                 List<Image<Gray, Byte>> lesImagesNumTmp = new List<Image<Gray, Byte>>(lesImagesNum);
 
                 updateInfoTraitement(this, "Recherche - Année de Master : ", "Test...");
+                master = "";
                 if (M1.estMaster(lesImagesNum))
                 {
                     updateInfoTraitement(this, "Recherche - Année de Master : ", "Les images scannées correspondent au Master 1");
+                    master = "M1";
                     lesPagesModeles = M1.lesPagesModeles;
                 }
                 else if (M2.estMaster(lesImagesNum))
                 {
                     updateInfoTraitement(this, "Recherche - Année de Master : ", "Les images scannées correspondent au Master 2");
+                    master = "M2";
                     lesPagesModeles = M2.lesPagesModeles; 
                 }
                 else
@@ -252,11 +271,13 @@ namespace Numerisation_GIST
                     if (dr.Equals(DialogResult.Yes))
                     {
                         updateInfoTraitement(this, "Recherche - Année de Master : ", "Les images scannées correspondent au Master 1");
+                        master = "M1";
                         lesPagesModeles = M1.lesPagesModeles;
                     }
                     else if(dr.Equals(DialogResult.No))
                     {
                         updateInfoTraitement(this, "Recherche - Année de Master : ", "Les images scannées correspondent au Master 2");
+                        master = "M2";
                         lesPagesModeles = M2.lesPagesModeles;
                     }
                 }
@@ -315,9 +336,11 @@ namespace Numerisation_GIST
                     resultat = str + " n'ont pas de correspondance avec les images numérisées\n";
                 }
                 updateResultatTraitement(this, resultat);
-                RechercheCase();
-                RechercheSectionVide();
+                //RechercheCase();
+                //RechercheSectionVide();
                 decoupeRubrique();
+
+                updateTreeDelegateTraitement(this);
 
                 updateInfoTraitement(this, "Traitement terminé.", "");
                 suppressionDossierTmp();
@@ -335,7 +358,7 @@ namespace Numerisation_GIST
 
         public void RechercheCase()
         {
-            Console.WriteLine("Recherche de case coché");
+            updateInfoTraitement(this, "Recherche de case coché : ", "Init...");
             Image<Gray, Byte> imageCase = imageModification.convertionBinaire(lesCorrespondances[lesPagesModeles[0]]);
             Image<Gray, Byte> imageCaseModele = imageModification.convertionBinaire(lesPagesModeles[0].image);
 
@@ -383,20 +406,20 @@ namespace Numerisation_GIST
             {
                 if (resultCase[i])
                 {
-                    Console.WriteLine("Master coché : " + lesCaseNom[i]);
+                    updateResultatTraitement(this, "Master coché : " + lesCaseNom[i]);
                 }
             }
         }
 
         public void RechercheSectionVide()
         {
-            Console.WriteLine("Recherche de section vide");
+            updateInfoTraitement(this, "Recherche de section vide : ", "Init...");
             double ratioZoneDeTexte = double.Parse(ConfigurationManager.AppSettings["ratioZoneDeTexte"]);
             MatModification matModification = new MatModification();
             int modifTaille = 20;
             foreach (PageModele modele in lesCorrespondances.Keys)
             {
-                Console.WriteLine("Page " + modele.numero);
+                updateInfoTraitement(this, "Recherche de section vide : ", "Page " + modele.numero);
                 Image<Gray, Byte> image = imageModification.convertionBinaire(lesCorrespondances[modele]);
                 Image<Gray, Byte> imageModele = imageModification.convertionBinaire(modele.image);
                 int i = 1;
@@ -430,34 +453,42 @@ namespace Numerisation_GIST
             }
         }
 
+        Dictionary<PageModele, Dictionary<String, Image<Gray, byte>>> lesRubriques;
+
         public void decoupeRubrique()
         {
-            Console.WriteLine("Découpage de rubrique");
+            updateInfoTraitement(this, "Découpage de rubrique : ", "Init...");
+            lesRubriques = new Dictionary<PageModele, Dictionary<string, Image<Gray, byte>>>();
             MatModification matModification = new MatModification();
             int modifTaille = 20;
             List<Image<Gray, Byte>> corresCopy = new List<Image<Gray, byte>>();
             corresCopy.AddRange(lesImagesNum);
             foreach (PageModele modele in lesCorrespondances.Keys)
             {
-                Console.WriteLine("Page " + modele.numero);
+                updateInfoTraitement(this, "Découpage de rubrique : ", "Page " + modele.numero);
                 Image<Gray, Byte> image = imageModification.convertionBinaire(lesCorrespondances[modele]);
 
-                int i = 1;
+                Dictionary<String, Image<Gray, byte>> modeleRubriques = new Dictionary<string, Image<Gray, byte>>();
+                //int i = 1;
                 foreach (ZoneInfo rubriqueInfo in modele.rubriques)
                 {
                     Rectangle rubriqueRect = tesseract.selectRectAllFirst(image, rubriqueInfo.motcle, rubriqueInfo.hauteur + modifTaille, rubriqueInfo.offset - modifTaille);
                     Image<Gray, Byte> imgRubrique = imageModification.rogner(lesCorrespondances[modele], rubriqueRect);
-                    imgRubrique.Save(cheminTmp + modele.numero + i + "-" + rubriqueInfo.nom + ".tif");
-                    i++;
+                    //imgRubrique.Save(cheminTmp + modele.numero + i + "-" + rubriqueInfo.nom + ".tif");
+                    modeleRubriques.Add(rubriqueInfo.nom, imgRubrique);
+                    //i++;
                 }
+                lesRubriques.Add(modele, modeleRubriques);
                 corresCopy.Remove(lesCorrespondances[modele]);
             }
+            /*
             int j = 1;
             foreach(Image<Gray, Byte> annexe in corresCopy)
             {
                 annexe.Save(cheminTmp + "annexe-" + j + ".tif");
                 j++;
             }
+            */
         }
 
         static void suppressionDossierTmp()
@@ -659,6 +690,106 @@ namespace Numerisation_GIST
 
                 XmlSerialization.WriteToXmlFile<Master>(cheminModele + "config-Modèle-" + master + ".xml", m, false);
             }
+            else if (master.Equals("M2"))
+            {
+                PageModele p = m.lesPagesModeles[0];
+                p.zoneInfos = new List<ZoneInfo>();
+                p.zoneInfos.Add(new ZoneInfo("Nom et prénom", "Prénom", 60, 0));
+                p.zoneInfos.Add(new ZoneInfo("Numéro INE", "baccalau", 60, -45));
+                p.zoneInfos.Add(new ZoneInfo("2eme Voeu : Mention", "Indiquer", 60, 75));
+                p.zoneInfos.Add(new ZoneInfo("2eme Voeu : Parcours", "Indiquer", 60, 145));
+
+                p.casesACocher = new List<ZoneInfo>();
+                p.casesACocher.Add(new ZoneInfo("Génie biotechnologie", "Parcours G", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Biochimie", "Parcours B", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie du bâtiment : GIEEER", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie du bâtiment : TNCR", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie des contenus numérique en entreprise : IID", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie des contenus numérique en entreprise : IND", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Ingénierie des contenus numérique en entreprise : ISI", "Parcours I", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Sciences et génie des matériaux", "Mention S", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Sciences pour l'environnement : GEEL", "Mention S", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Sciences pour l'environnement : GGL", "Mention S", 30, 0));
+                p.casesACocher.Add(new ZoneInfo("Sciences pour l'environnement : QTE", "Mention S", 30, 0));
+
+                p.rubriques = new List<ZoneInfo>();
+                p.rubriques.Add(new ZoneInfo("Informations étudiant", "Prénom", 220, 0));
+                p.rubriques.Add(new ZoneInfo("1er Voeu", "Cocher", 1650, 0));
+                p.rubriques.Add(new ZoneInfo("2eme Voeu", "Indiquer", 300, 0));
+
+                PageModele p2 = m.lesPagesModeles[1];
+                p2.zoneInfos = new List<ZoneInfo>();
+                //p2.zoneInfos.Add(new ZoneInfo("Nom", "inutile", 130, 0));
+                //p2.zoneInfos.Add(new ZoneInfo("Prénom", "Prénom", 60, 0));
+                p2.zoneInfos.Add(new ZoneInfo("Numéro INE", "Marital", 60, 70));
+                p2.zoneInfos.Add(new ZoneInfo("Nationalité", "Nationalité", 60, 0));
+                p2.zoneInfos.Add(new ZoneInfo("Date et lieu de naissance", "naissance", 60, 0));
+                p2.zoneInfos.Add(new ZoneInfo("Pays", "pays", 60, 0));
+                p2.zoneInfos.Add(new ZoneInfo("Adresse", "Adresse", 140, 0));
+                p2.zoneInfos.Add(new ZoneInfo("Code Postal et Ville", "postal", 60, 0));
+                p2.zoneInfos.Add(new ZoneInfo("Pays", "postal", 60, 70));
+                p2.zoneInfos.Add(new ZoneInfo("Email", "mail", 60, 0));
+
+                p2.casesACocher = new List<ZoneInfo>();
+
+                p2.rubriques = new List<ZoneInfo>();
+                p2.rubriques.Add(new ZoneInfo("Informations générales", "inutile", 1700, -110));
+                p2.rubriques.Add(new ZoneInfo("Cursus", "enseignement", 800, -160));
+
+                PageModele p3 = m.lesPagesModeles[2];
+                p3.zoneInfos = new List<ZoneInfo>();
+
+                p3.casesACocher = new List<ZoneInfo>();
+
+                p3.rubriques = new List<ZoneInfo>();
+                p3.rubriques.Add(new ZoneInfo("Enseignement supérieur", "officiel", 1200, -110));
+                p3.rubriques.Add(new ZoneInfo("Compétences linguistiques", "cadre", 950, -110));
+
+                PageModele p4 = m.lesPagesModeles[3];
+                p4.zoneInfos = new List<ZoneInfo>();
+                p4.zoneInfos.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
+
+                p4.casesACocher = new List<ZoneInfo>();
+
+                p4.rubriques = new List<ZoneInfo>();
+                p4.rubriques.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
+                p4.rubriques.Add(new ZoneInfo("Emplois et Stages", "Dernière", 1950, -90));
+
+                PageModele p5 = m.lesPagesModeles[4];
+                p5.zoneInfos = new List<ZoneInfo>();
+                p5.zoneInfos.Add(new ZoneInfo("Exposé des motivations", "motivation", 1350, 0));
+                p5.zoneInfos.Add(new ZoneInfo("Soussigné", "soussigné", 60, 0));
+                p5.zoneInfos.Add(new ZoneInfo("Fait à...", "Fait", 60, 0));
+                p5.zoneInfos.Add(new ZoneInfo("Signature", "Fait", 550, 50));
+
+                p5.casesACocher = new List<ZoneInfo>();
+
+                p5.rubriques = new List<ZoneInfo>();
+                p5.rubriques.Add(new ZoneInfo("Entreprise apprentissage", "apprentissage", 460, 0));
+                p5.rubriques.Add(new ZoneInfo("Motivations", "motivation", 2200, 0));
+
+                PageModele p6 = m.lesPagesModeles[5];
+                p6.zoneInfos = new List<ZoneInfo>();
+                p6.casesACocher = new List<ZoneInfo>();
+                p6.rubriques = new List<ZoneInfo>();
+
+                PageModele p8 = m.lesPagesModeles[7];
+                p8.zoneInfos = new List<ZoneInfo>();
+                p8.casesACocher = new List<ZoneInfo>();
+                p8.rubriques = new List<ZoneInfo>();
+
+                PageModele p7 = m.lesPagesModeles[6];
+                p7.zoneInfos = new List<ZoneInfo>();
+                p7.rubriques.Add(new ZoneInfo("Projet professionnel", "fessionnel", 560, 0));
+                p7.casesACocher = new List<ZoneInfo>();
+                p7.rubriques = new List<ZoneInfo>();
+                p7.rubriques.Add(new ZoneInfo("Rappel infos étudiant", "Mention", 620, 0));
+                p7.rubriques.Add(new ZoneInfo("Personne recommandant", "recommandant", 270, 0));
+                p7.rubriques.Add(new ZoneInfo("Appréciation", "DISCIPLINE", 600, 0));
+                p7.rubriques.Add(new ZoneInfo("Signature", "Fait le", 200, 0));
+
+                XmlSerialization.WriteToXmlFile<Master>(cheminModele + "config-Modèle-" + master + ".xml", m, false);
+            }
             return m;
         }
 
@@ -796,6 +927,43 @@ namespace Numerisation_GIST
                 chemin = chemin + "\\";
             }
             return chemin;
+        }
+
+        private void tree_result_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode selectedNode = e.Node;
+            if (selectedNode.Level != 0)
+            {
+                if(selectedNode.Level == 1)
+                {
+                    //pb_image.Image = lesImagesOrder[selectedNode.Index].Resize(pb_image.Width / lesImagesOrder[selectedNode.Index].Width, Emgu.CV.CvEnum.Inter.Nearest).ToBitmap();
+                    pb_image.Size = lesImagesOrder[selectedNode.Index].Size;
+                    pb_image.Image = lesImagesOrder[selectedNode.Index].ToBitmap();
+                    // Show full image
+                }
+                else // Level 2 - rubriques
+                {
+                    foreach (PageModele modele in lesCorrespondances.Keys)
+                    {
+                        Console.WriteLine(selectedNode.Parent.Text + " - " + modele.numero);
+                        if (selectedNode.Parent.Text.Equals("Page " + modele.numero))
+                        {
+                            foreach (ZoneInfo rubriqueInfo in modele.rubriques)
+                            {
+                                if (rubriqueInfo.nom.Equals(selectedNode.Text))
+                                {
+                                    Image<Gray, Byte> imgRubrique = lesRubriques[modele][rubriqueInfo.nom];
+                                    //pb_image.Image = imgRubrique.Resize(pb_image.Width/imgRubrique.Width, Emgu.CV.CvEnum.Inter.Nearest).ToBitmap();
+                                    pb_image.Size = imgRubrique.Size;
+                                    pb_image.Image = imgRubrique.ToBitmap();
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
